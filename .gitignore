@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.local
+dist/
+build/
+.DS_Store
+*.log
+npm-debug.log*
+.vercel
+backend/venv/
+frontend/dist/
+shared/dist/
+backend/dist/
