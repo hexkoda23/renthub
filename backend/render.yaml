@@ -18,7 +18,7 @@ services:
         sync: false
       - key: FIREBASE_CLIENT_EMAIL
         sync: false
-      - key: GROQ_API_KEY
+      - key: renthub
         sync: false
       - key: AI_MODEL
         sync: false
