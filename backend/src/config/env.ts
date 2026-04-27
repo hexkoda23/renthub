@@ -14,7 +14,7 @@ const envSchema = z.object({
   FIREBASE_CLIENT_EMAIL: z.string(),
   
   // AI & Media
-  GROQ_API_KEY: z.string(),
+  GROQ_API_KEY: z.string().default(() => process.env.renthub || process.env.GROQ_API_KEY || ""),
   AI_MODEL: z.string().default("llama-3.3-70b-versatile"),
   CLOUDINARY_CLOUD_NAME: z.string(),
   CLOUDINARY_API_KEY: z.string(),
