@@ -267,10 +267,10 @@ export const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: "Ikoyi", tag: "Luxury & Serenity", img: "https://images.unsplash.com/photo-1590059536034-780c8e217278?auto=format&fit=crop&q=80&w=800" },
+              { name: "Ikoyi", tag: "Luxury & Serenity", img: "https://images.unsplash.com/photo-1620332372374-f108c53d2e03?auto=format&fit=crop&q=80&w=800" },
               { name: "Lekki Phase 1", tag: "Vibrant Lifestyle", img: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800" },
               { name: "Victoria Island", tag: "Business Central", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" },
-              { name: "Maitama", tag: "Abuja Elite", img: "https://images.unsplash.com/photo-1600585154340-be6199f7e009?auto=format&fit=crop&q=80&w=800" }
+              { name: "Maitama", tag: "Abuja Elite", img: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&q=80&w=800" }
             ].map((area, i) => (
               <motion.div
                 key={area.name}
