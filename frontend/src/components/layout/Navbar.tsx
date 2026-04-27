@@ -1,115 +1,186 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Button } from "../ui";
 import { useAuth } from "../../hooks/useAuth";
-import { User, LogOut, Menu } from "lucide-react";
+import { User, LogOut, Menu, X, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "../../utils/cn";
 
 export const Navbar = () => {
   const { user, isAuthenticated, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }) => cn(
+    "relative text-sm font-medium transition-all duration-300 py-1",
+    "after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full",
+    isScrolled || !isHomePage ? "text-white/90 hover:text-white" : "text-neutral-700 hover:text-ink",
+    isActive && "after:w-full text-primary"
+  );
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-xl font-bold text-white">R</span>
+    <nav 
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out",
+        isScrolled 
+          ? "h-14 bg-ink/90 backdrop-blur-xl border-b border-white/5 shadow-2xl" 
+          : "h-20 bg-transparent"
+      )}
+    >
+      <div className="container mx-auto h-full flex items-center justify-between px-6">
+        <Link to="/" className="flex items-center gap-1.5 group">
+          <div className="relative flex items-center">
+            <span className={cn(
+              "text-2xl font-display font-bold tracking-tight transition-colors duration-300",
+              isScrolled || !isHomePage ? "text-white" : "text-ink"
+            )}>
+              Rent<span className="text-primary">Hub</span>
+            </span>
+            <motion.div 
+              animate={{ scale: [1, 1.5, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="absolute -right-2 top-1 h-1.5 w-1.5 rounded-full bg-primary"
+            />
           </div>
-          <span className="text-xl font-bold font-sora tracking-tight">Rent<span className="text-primary">Hub</span></span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <NavLink to="/" className={({ isActive }) => `text-sm font-medium transition-colors hover:text-primary ${isActive ? "text-primary" : "text-neutral-600"}`}>Home</NavLink>
-          <NavLink to="/listings?purpose=rent" className={({ isActive }) => `text-sm font-medium transition-colors hover:text-primary ${isActive ? "text-primary" : "text-neutral-600"}`}>Rent</NavLink>
-          <NavLink to="/listings?purpose=sale" className={({ isActive }) => `text-sm font-medium transition-colors hover:text-primary ${isActive ? "text-primary" : "text-neutral-600"}`}>Buy</NavLink>
-          <NavLink to="/ai-advisor" className={({ isActive }) => `text-sm font-medium transition-colors hover:text-primary ${isActive ? "text-primary" : "text-neutral-600"}`}>AI Advisor</NavLink>
-          <NavLink to="/handover" className={({ isActive }) => `text-sm font-bold transition-colors hover:text-primary ${isActive ? "text-primary" : "text-neutral-600"}`}>Tenant Handover</NavLink>
+          <NavLink to="/" className={navLinkClass}>Home</NavLink>
+          <NavLink to="/listings?purpose=rent" className={navLinkClass}>Rent</NavLink>
+          <NavLink to="/listings?purpose=sale" className={navLinkClass}>Buy</NavLink>
+          <NavLink to="/ai-advisor" className={navLinkClass}>AI Advisor</NavLink>
+          <NavLink to="/handover" className={navLinkClass}>Handover</NavLink>
         </div>
 
         <div className="flex items-center gap-4">
-          {isAuthenticated ? (
-            <div className="flex items-center gap-4">
-               <Link to="/dashboard">
-                <Button size="sm" variant="ghost" className="gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">{(user?.displayName || "User").split(" ")[0]}</span>
-                </Button>
-              </Link>
-              <Button size="sm" variant="outline" onClick={signOut} className="gap-2">
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Logout</span>
+          <div className="hidden sm:flex items-center gap-3">
+            <Link to="/create-listing">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={cn(
+                  "border border-white/10 text-white hover:bg-white/10",
+                  !(isScrolled || !isHomePage) && "border-ink/10 text-ink hover:bg-ink/5"
+                )}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                List Property
               </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link to="/login">
-                <Button size="sm" variant="ghost">Sign In</Button>
-              </Link>
-              <Link to="/register">
-                <Button size="sm">Get Started</Button>
-              </Link>
-            </div>
-          )}
+            </Link>
+            
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <Link to="/dashboard">
+                  <div className="h-8 w-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-display text-xs font-bold hover:bg-primary hover:text-white transition-all">
+                    {(user?.displayName || "U").charAt(0).toUpperCase()}
+                  </div>
+                </Link>
+                <button 
+                  onClick={signOut}
+                  className={cn(
+                    "p-2 rounded-full transition-colors",
+                    isScrolled || !isHomePage ? "text-white/60 hover:text-white hover:bg-white/10" : "text-neutral-500 hover:text-ink hover:bg-ink/5"
+                  )}
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className={cn(
+                  "text-sm font-display font-medium transition-colors",
+                  isScrolled || !isHomePage ? "text-white/80 hover:text-white" : "text-neutral-600 hover:text-ink"
+                )}>
+                  Sign In
+                </Link>
+                <Link to="/register">
+                  <Button size="sm" variant="primary">Get Started</Button>
+                </Link>
+              </>
+            )}
+          </div>
+
           <button 
-            className="md:hidden p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+            className={cn(
+              "md:hidden p-2 rounded-full transition-colors",
+              isScrolled || !isHomePage ? "text-white/80 hover:bg-white/10" : "text-ink hover:bg-ink/5"
+            )}
             onClick={() => setIsOpen(!isOpen)}
           >
-            <Menu className="h-6 w-6" />
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden border-t border-neutral-100 bg-white p-4 animate-in slide-in-from-top duration-200">
-          <div className="flex flex-col gap-4">
-            <NavLink 
-              to="/" 
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) => `text-sm font-medium transition-colors ${isActive ? "text-primary" : "text-neutral-600"}`}
-            >
-              Home
-            </NavLink>
-            <NavLink 
-              to="/listings?purpose=rent" 
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) => `text-sm font-medium transition-colors ${isActive ? "text-primary" : "text-neutral-600"}`}
-            >
-              Rent
-            </NavLink>
-            <NavLink 
-              to="/listings?purpose=sale" 
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) => `text-sm font-medium transition-colors ${isActive ? "text-primary" : "text-neutral-600"}`}
-            >
-              Buy
-            </NavLink>
-            <NavLink 
-              to="/ai-advisor" 
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) => `text-sm font-medium transition-colors ${isActive ? "text-primary" : "text-neutral-600"}`}
-            >
-              AI Advisor
-            </NavLink>
-            <NavLink 
-              to="/handover" 
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) => `text-sm font-bold transition-colors ${isActive ? "text-primary" : "text-neutral-600"}`}
-            >
-              Tenant Handover
-            </NavLink>
-            {!isAuthenticated && (
-              <div className="flex flex-col gap-2 pt-2 border-t border-neutral-100">
-                <Link to="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "100vh" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="fixed inset-0 top-0 z-[60] bg-ink flex flex-col p-8 md:hidden"
+          >
+            <div className="flex justify-between items-center mb-12">
+              <span className="text-2xl font-display font-bold text-white">
+                Rent<span className="text-primary">Hub</span>
+              </span>
+              <button onClick={() => setIsOpen(false)} className="text-white">
+                <X className="h-8 w-8" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              {["Home", "Rent", "Buy", "AI Advisor", "Handover"].map((item, i) => (
+                <motion.div
+                  key={item}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Link 
+                    to={item === "Home" ? "/" : `/listings?purpose=${item.toLowerCase()}`}
+                    onClick={() => setIsOpen(false)}
+                    className="text-4xl font-display font-bold text-white hover:text-primary transition-colors"
+                  >
+                    {item}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-auto pt-8 border-t border-white/10 flex flex-col gap-4">
+              {!isAuthenticated ? (
+                <>
+                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full border-white/20 text-white">Sign In</Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full">Get Started</Button>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full">Go to Dashboard</Button>
                 </Link>
-                <Link to="/register" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full justify-start">Get Started</Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {isScrolled && (
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-primary/30" />
       )}
     </nav>
   );

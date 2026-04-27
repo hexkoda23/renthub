@@ -2,60 +2,82 @@ import { useState } from "react";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { Input, Button } from "../../components/ui";
-import { Search, HelpCircle, ChevronRight, Home, Shield, DollarSign, UserCheck } from "lucide-react";
+import { Search, HelpCircle, ChevronRight, Home, Shield, DollarSign, UserCheck, Sparkles, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const HelpCenter = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-sand grain">
       <Navbar />
       
       <main>
         {/* Search Hero */}
-        <section className="bg-neutral-900 py-16 px-4 text-center">
-          <div className="container mx-auto">
-            <h1 className="text-3xl font-extrabold font-sora text-white mb-6">Hello! How can we help?</h1>
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 h-5 w-5" />
-              <Input 
-                placeholder="Search for help (e.g. 'how to list a property', 'verification')" 
-                className="w-full pl-12 py-7 rounded-2xl border-none text-neutral-900 shadow-xl"
-              />
-            </div>
+        <section className="bg-ink py-24 px-4 text-center relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+          <div className="container mx-auto relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 text-xs font-bold uppercase tracking-widest text-primary mb-8">
+                <Sparkles className="h-3.5 w-3.5" />
+                How can we help?
+              </div>
+              <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-8">
+                Search the <span className="text-primary italic font-serif">Help Center</span>
+              </h1>
+              <div className="max-w-2xl mx-auto relative group">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-500 h-6 w-6 group-focus-within:text-primary transition-colors" />
+                <Input 
+                  placeholder="Search for articles, guides, or verification info..." 
+                  className="w-full pl-16 py-8 rounded-[2rem] border-none text-ink bg-white shadow-2xl shadow-black/20 text-lg placeholder:text-neutral-400 focus:ring-4 focus:ring-primary/20 transition-all"
+                />
+              </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Categories */}
-        <section className="py-20 px-4">
+        <section className="py-24 px-4">
           <div className="container mx-auto">
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <HelpCard 
-                  icon={<Home className="text-primary" />}
+                  icon={<Home className="text-primary h-7 w-7" />}
                   title="Getting Started"
                   description="How to browse, filter and save properties you love."
+                  delay={0}
                 />
                 <HelpCard 
-                  icon={<UserCheck className="text-primary" />}
+                  icon={<UserCheck className="text-primary h-7 w-7" />}
                   title="Account & Profile"
                   description="Managing your account, notifications and security."
+                  delay={0.1}
                 />
                 <HelpCard 
-                  icon={<Shield className="text-primary" />}
+                  icon={<Shield className="text-primary h-7 w-7" />}
                   title="Trust & Safety"
                   description="Understanding our verification and avoiding scams."
+                  delay={0.2}
                 />
                 <HelpCard 
-                  icon={<DollarSign className="text-primary" />}
+                  icon={<DollarSign className="text-primary h-7 w-7" />}
                   title="Selling & Fees"
                   description="How to list your property and manage enquiries."
+                  delay={0.3}
                 />
              </div>
           </div>
         </section>
 
         {/* FAQs */}
-        <section className="py-20 bg-neutral-50/50">
+        <section className="py-32 bg-ink/5 relative overflow-hidden">
           <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="text-3xl font-bold font-sora text-neutral-900 mb-12 text-center underline decoration-primary decoration-4 underline-offset-8">Frequently Asked Questions</h2>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-ink mb-4">
+                Common <span className="text-primary italic font-serif">Questions</span>
+              </h2>
+              <div className="h-1.5 w-24 bg-primary mx-auto rounded-full" />
+            </div>
             
             <div className="space-y-4">
               <FaqItem 
@@ -79,17 +101,24 @@ export const HelpCenter = () => {
         </section>
 
         {/* Contact Support */}
-        <section className="py-24 text-center">
+        <section className="py-32 text-center">
           <div className="container mx-auto px-4">
-             <div className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary mb-6">
-               <HelpCircle className="h-8 w-8" />
-             </div>
-             <h3 className="text-2xl font-bold font-sora mb-4 text-neutral-900">Still have questions?</h3>
-             <p className="text-neutral-500 mb-8 max-w-md mx-auto">Our support agents are available via WhatsApp and Email to assist you with any specific issues.</p>
-             <div className="flex justify-center gap-4">
-                <Button variant="primary" className="rounded-xl px-8 font-bold">Contact Support</Button>
-                <Button variant="outline" className="rounded-xl px-8 font-bold">Join Community</Button>
-             </div>
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               className="max-w-3xl mx-auto p-16 rounded-[3rem] bg-white border border-neutral-200/60 shadow-2xl shadow-ink/5"
+             >
+               <div className="inline-flex h-20 w-20 items-center justify-center rounded-[2rem] bg-sand text-ink mb-8">
+                 <HelpCircle className="h-10 w-10" />
+               </div>
+               <h3 className="text-4xl font-display font-bold mb-4 text-ink">Still have questions?</h3>
+               <p className="text-neutral-500 mb-10 text-lg max-w-md mx-auto leading-relaxed">Our support agents are available via WhatsApp and Email to assist you with any specific issues.</p>
+               <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <Button className="bg-ink text-white hover:bg-neutral-800 rounded-2xl px-12 h-16 font-bold text-lg shadow-xl shadow-ink/10 transition-all">Contact Support</Button>
+                  <Button variant="outline" className="border-neutral-200 hover:bg-sand rounded-2xl px-12 h-16 font-bold text-lg transition-all">Join Community</Button>
+               </div>
+             </motion.div>
           </div>
         </section>
       </main>
@@ -99,35 +128,53 @@ export const HelpCenter = () => {
   );
 };
 
-const HelpCard = ({ icon, title, description }: { icon: any, title: string, description: string }) => (
-  <div className="p-8 rounded-3xl bg-white border border-neutral-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group">
-    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
+const HelpCard = ({ icon, title, description, delay }: { icon: any, title: string, description: string, delay: number }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay }}
+    className="p-10 rounded-[2.5rem] bg-white border border-neutral-200/60 shadow-xl shadow-ink/5 hover:border-primary/30 transition-all duration-500 cursor-pointer group"
+  >
+    <div className="h-16 w-16 rounded-2xl bg-sand flex items-center justify-center mb-8 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-500">
       {icon}
     </div>
-    <h4 className="font-bold text-neutral-900 mb-2">{title}</h4>
-    <p className="text-sm text-neutral-500 leading-relaxed mb-6">{description}</p>
-    <div className="flex items-center text-xs font-bold text-primary group-hover:gap-2 transition-all">
-      Read More <ChevronRight className="h-3 w-3" />
+    <h4 className="text-2xl font-display font-bold text-ink mb-3">{title}</h4>
+    <p className="text-neutral-500 leading-relaxed mb-8">{description}</p>
+    <div className="flex items-center gap-2 text-sm font-bold text-primary group-hover:gap-4 transition-all duration-300">
+      Explore Guide <ArrowRight className="h-4 w-4" />
     </div>
-  </div>
+  </motion.div>
 );
 
 const FaqItem = ({ question, answer }: { question: string, answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border border-neutral-100 bg-white rounded-2xl overflow-hidden shadow-sm">
+    <div className="bg-white rounded-3xl border border-neutral-200/60 shadow-xl shadow-ink/5 overflow-hidden transition-all duration-300">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-6 text-left"
+        className="w-full flex items-center justify-between p-8 text-left group"
       >
-        <span className="font-bold text-neutral-900 pr-4">{question}</span>
-        <ChevronRight className={`h-5 w-5 text-neutral-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-      </button>
-      {isOpen && (
-        <div className="px-6 pb-6 text-sm text-neutral-600 animate-in slide-in-from-top-2">
-          {answer}
+        <span className={`text-lg font-bold transition-colors duration-300 ${isOpen ? 'text-primary' : 'text-ink group-hover:text-primary'}`}>{question}</span>
+        <div className={`h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-primary text-white rotate-90' : 'bg-sand text-neutral-400'}`}>
+          <ChevronRight className="h-5 w-5" />
         </div>
-      )}
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-8 pb-8 text-neutral-600 leading-relaxed font-sans text-lg border-t border-neutral-50 pt-6">
+              {answer}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

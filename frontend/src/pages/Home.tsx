@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { SearchBar } from "../components/shared/SearchBar";
 import { ListingGrid } from "../components/listings/ListingGrid";
-import { Button } from "../components/ui";
-import { Shield, Zap, MessageSquare } from "lucide-react";
+import { Button, Badge } from "../components/ui";
+import { Shield, Zap, MessageSquare, ArrowRight, CheckCircle2, Star, Users, Home as HomeIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listingsService } from "../services/listings.service";
+import { cn } from "../utils/cn";
 
 export const Home = () => {
   const [source, setSource] = useState<string | undefined>();
@@ -23,151 +24,270 @@ export const Home = () => {
   const listings = data?.data?.data || [];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-sand overflow-x-hidden">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center py-20 px-4 text-center md:py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary-light/50 via-white to-white" />
-        <div className="absolute top-0 left-0 w-full h-full -z-10 opacity-5 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-32 px-6 overflow-hidden bg-ink">
+        {/* Cinematic background */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute inset-0 bg-grain opacity-40 pointer-events-none" />
         
-        <div className="container mx-auto">
-          <Badge variant="info" className="mb-6 rounded-full px-4 py-1 text-sm font-medium">✨ Nigeria's First AI-Powered Real Estate Hub</Badge>
-          <h1 className="mb-6 max-w-4xl mx-auto text-4xl font-extrabold font-sora leading-tight text-neutral-900 md:text-6xl lg:text-7xl">
-            Find Your Perfect Home <br/> in <span className="text-primary italic">Nigeria</span>
-          </h1>
-          <p className="mb-10 max-w-2xl mx-auto text-lg text-neutral-600 md:text-xl">
-            Verified property listings, interactive area guides, and an AI advisor to help you choose the best neighbourhood for your lifestyle.
-          </p>
-          
-          <div className="mx-auto flex flex-col items-center gap-2">
-            {/* Hero Tabs */}
-            <div className="flex gap-1 rounded-2xl bg-white/50 backdrop-blur-md p-1.5 border border-neutral-100 shadow-sm mb-4">
-              {[
-                { id: "rent", label: "Rent" },
-                { id: "sale", label: "Buy" },
-                { id: "shortlet", label: "Shortlet" }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setHeroPurpose(tab.id as any)}
-                  className={`relative rounded-xl px-6 py-2.5 text-sm font-bold transition-all z-10 ${
-                    heroPurpose === tab.id ? "text-white" : "text-neutral-500 hover:text-neutral-900"
-                  }`}
-                >
-                  {heroPurpose === tab.id && (
-                    <motion.div
-                      layoutId="heroTab"
-                      className="absolute inset-0 bg-primary rounded-xl shadow-md"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                  <span className="relative z-20">{tab.label}</span>
-                </button>
-              ))}
-            </div>
-            <SearchBar purpose={heroPurpose} />
-          </div>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-4 text-center">
-            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-white/50 backdrop-blur rounded-2xl border border-neutral-100/50 shadow-sm transition-all hover:shadow-md">
-              <span className="text-sm font-bold text-neutral-600 font-sora">Packing out soon?</span>
-              <div className="flex gap-2">
-                 <Link to="/handover">
-                   <Button size="sm" variant="outline" className="rounded-xl border-primary text-primary hover:bg-primary hover:text-white font-bold px-5">List Property</Button>
-                 </Link>
-                 <Link to="/handover">
-                   <Button size="sm" variant="outline" className="rounded-xl border-primary text-primary hover:bg-primary hover:text-white font-bold px-5">Get Alerts</Button>
-                 </Link>
+        <div className="container mx-auto relative z-10">
+          <div className="flex flex-col items-center text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Badge variant="glass" className="mb-8 px-5 py-2 text-xs tracking-[0.2em] uppercase">
+                <span className="mr-2">✨</span> Nigeria's First AI-Powered Real Estate Hub
+              </Badge>
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mb-8 max-w-5xl mx-auto text-6xl md:text-8xl lg:text-9xl font-display font-bold leading-[0.9] text-white tracking-tighter"
+            >
+              Find Your Perfect <br/> Home in <span className="font-serif italic text-primary">Nigeria</span>
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mb-12 max-w-2xl mx-auto text-lg md:text-xl text-neutral-400 font-sans leading-relaxed"
+            >
+              Verified property listings, interactive area guides, and an AI advisor to help you choose the best neighbourhood for your lifestyle.
+            </motion.p>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              {/* Hero Tabs */}
+              <div className="inline-flex gap-1 rounded-full bg-white/5 backdrop-blur-xl p-1.5 border border-white/10 mb-6">
+                {[
+                  { id: "rent", label: "Rent" },
+                  { id: "sale", label: "Buy" },
+                  { id: "shortlet", label: "Shortlet" }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setHeroPurpose(tab.id as any)}
+                    className={cn(
+                      "relative rounded-full px-8 py-3 text-sm font-display font-bold transition-all duration-300",
+                      heroPurpose === tab.id ? "text-white" : "text-neutral-400 hover:text-white"
+                    )}
+                  >
+                    {heroPurpose === tab.id && (
+                      <motion.div
+                        layoutId="heroTab"
+                        className="absolute inset-0 bg-primary rounded-full"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <span className="relative z-10">{tab.label}</span>
+                  </button>
+                ))}
               </div>
+              
+              <div className="bg-white/5 backdrop-blur-2xl p-2 rounded-[32px] border border-white/10 shadow-2xl">
+                <SearchBar purpose={heroPurpose} />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Floating Stat Pills */}
+        <div className="hidden lg:block">
+          <FloatingStat 
+            delay={1} 
+            className="top-[20%] left-[10%]" 
+            icon={<HomeIcon className="h-4 w-4 text-primary" />} 
+            label="2,400+ Listings" 
+          />
+          <FloatingStat 
+            delay={1.2} 
+            className="top-[35%] right-[12%]" 
+            icon={<Star className="h-4 w-4 text-primary" />} 
+            label="Verified Properties" 
+          />
+          <FloatingStat 
+            delay={1.4} 
+            className="bottom-[25%] left-[15%]" 
+            icon={<Users className="h-4 w-4 text-primary" />} 
+            label="12k+ Happy Tenants" 
+          />
+        </div>
+
+        {/* Bottom Trust Stats */}
+        <div className="absolute bottom-12 left-0 right-0 z-10">
+          <div className="container mx-auto px-6">
+            <div className="flex flex-wrap justify-center gap-12 border-t border-white/5 pt-12">
+              {[
+                { label: "Happy Tenants", value: "12,000+" },
+                { label: "Verified Listings", value: "98%" },
+                { label: "Agent Fees", value: "₦0" }
+              ].map((stat, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.5 + i * 0.1 }}
+                  className="flex flex-col items-center"
+                >
+                  <span className="text-2xl font-display font-bold text-white">{stat.value}</span>
+                  <span className="text-xs uppercase tracking-widest text-neutral-500 mt-1">{stat.label}</span>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 bg-neutral-50">
-        <div className="container mx-auto px-4">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold font-sora text-neutral-900 md:text-4xl text-gradient">Why Choose RentHub?</h2>
-            <p className="text-neutral-500">Bringing transparency and intelligence to Nigerian real estate.</p>
+      {/* Stats Banner */}
+      <section className="bg-primary py-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grain opacity-10" />
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { value: "₦2.5B+", label: "Property Value" },
+              { value: "36+", label: "Nigerian Cities" },
+              { value: "15k+", label: "Monthly Users" },
+              { value: "24/7", label: "AI Assistance" }
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-4xl md:text-5xl font-serif italic text-white mb-2">{stat.value}</div>
+                <div className="text-xs uppercase tracking-[0.2em] text-white/70 font-bold">{stat.label}</div>
+              </div>
+            ))}
           </div>
-          
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <FeatureCard 
-              icon={<Shield className="h-6 w-6 text-primary" />}
-              title="Verified Listings"
-              description="Every property on RentHub is manually verified to ensure descriptions and photos match reality."
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-32 bg-sand relative">
+        <div className="container mx-auto px-6">
+          <div className="space-y-32">
+            <FeatureRow 
+              number="01"
+              title="Verified Listings Only"
+              description="Every property on RentHub is manually verified to ensure descriptions and photos match reality. No more fake listings or agent scams."
+              icon={<Shield className="h-10 w-10 text-primary" />}
+              reverse={false}
             />
-            <FeatureCard 
-              icon={<MessageSquare className="h-6 w-6 text-primary" />}
-              title="AI Area Advisor"
-              description="Get personalized neighborhood recommendations based on safety scores, traffic, and your budget."
+            <FeatureRow 
+              number="02"
+              title="AI Neighbourhood Advisor"
+              description="Get personalized recommendations based on safety scores, traffic patterns, and your specific budget. We help you find a community, not just a house."
+              icon={<MessageSquare className="h-10 w-10 text-primary" />}
+              reverse={true}
             />
-            <FeatureCard 
-              icon={<Zap className="h-6 w-6 text-primary" />}
-              title="Instant Contact"
-              description="Chat directly with verified landlords and agents via secure WhatsApp or in-app messaging."
+            <FeatureRow 
+              number="03"
+              title="Seamless Digital Handover"
+              description="Our proprietary digital handover flow ensures a smooth transition between outgoing and incoming tenants, saving you thousands in agent fees."
+              icon={<Zap className="h-10 w-10 text-primary" />}
+              reverse={false}
             />
           </div>
         </div>
       </section>
 
       {/* Trending Listings */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <section className="py-32 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div>
-              <h2 className="text-3xl font-bold font-sora text-neutral-900">Featured Properties</h2>
-              <p className="text-neutral-500 mt-2">Hand-picked listings in prime locations.</p>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                <span className="text-sm font-display font-bold uppercase tracking-widest text-primary">What's Hot in Lagos</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-ink">Trending Listings</h2>
               
               {/* Source Tabs */}
-              <div className="mt-6 flex gap-1 rounded-xl bg-neutral-100 p-1 w-fit relative">
+              <div className="mt-8 flex gap-1 rounded-full bg-neutral-100 p-1 w-fit">
                 {[
-                  { id: undefined, label: "All" },
-                  { id: "renthub", label: "RentHub" },
+                  { id: undefined, label: "All Properties" },
+                  { id: "renthub", label: "RentHub Exclusive" },
                   { id: "jiji", label: "Jiji.ng" }
                 ].map((tab) => (
                   <button
                     key={tab.label}
                     onClick={() => setSource(tab.id as any)}
-                    className={`relative rounded-lg px-4 py-2 text-xs font-bold transition-all z-10 ${
-                      source === tab.id ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700"
-                    }`}
+                    className={cn(
+                      "relative rounded-full px-6 py-2.5 text-xs font-display font-bold transition-all duration-300",
+                      source === tab.id ? "text-ink" : "text-neutral-500 hover:text-ink"
+                    )}
                   >
                     {source === tab.id && (
                       <motion.div
                         layoutId="activeTabHome"
-                        className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                        className="absolute inset-0 bg-white rounded-full shadow-sm"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
-                    <span className="relative z-20">{tab.label}</span>
+                    <span className="relative z-10">{tab.label}</span>
                   </button>
                 ))}
               </div>
             </div>
-            <Link to="/listings">
-              <Button variant="outline" className="rounded-xl font-bold border-neutral-200">View All Properties</Button>
+            <Link to="/listings" className="group flex items-center gap-2 text-ink font-display font-bold hover:text-primary transition-colors">
+              View All Properties
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
           <ListingGrid isLoading={isLoading} listings={listings} />
         </div>
       </section>
 
-      {/* AI CTA Section */}
-      <section className="py-24 container mx-auto px-4">
-        <div className="rounded-3xl bg-primary px-8 py-16 text-center text-white md:py-24 overflow-hidden relative">
-           <div className="absolute top-0 right-0 h-64 w-64 translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-3xl" />
-           <div className="absolute bottom-0 left-0 h-64 w-64 -translate-x-1/2 translate-y-1/2 rounded-full bg-secondary/20 blur-3xl" />
+      {/* AI Advisor CTA Section */}
+      <section className="py-24 container mx-auto px-6">
+        <div className="rounded-[48px] bg-ink px-8 py-20 text-center text-white overflow-hidden relative border border-white/5">
+           {/* Grid pattern background */}
+           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, #FF5C00 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
            
-           <h2 className="mb-6 mx-auto max-w-2xl text-3xl font-bold font-sora md:text-5xl leading-tight">Not sure where to live? Ask our AI Advisor.</h2>
-           <p className="mb-10 mx-auto max-w-xl text-primary-light/90 md:text-lg">
-             "Where can I find a safe 2-bedroom flat in Lagos for under 1.5M Naira?" — Get the answer in seconds.
-           </p>
-           <Link to="/ai-advisor">
-             <Button size="lg" className="bg-white text-primary hover:bg-neutral-100 px-10">Start Chatting Now</Button>
-           </Link>
+           <div className="relative z-10 max-w-4xl mx-auto">
+             <Badge variant="glass" className="mb-8">AI POWERED</Badge>
+             <h2 className="mb-12 text-4xl md:text-6xl font-display font-bold leading-tight">
+               Not sure where to live? <br/> Ask our AI Advisor.
+             </h2>
+             
+             {/* Fake chat animation */}
+             <div className="mb-16 space-y-4 max-w-lg mx-auto">
+               <motion.div 
+                 initial={{ opacity: 0, x: -20 }}
+                 whileInView={{ opacity: 1, x: 0 }}
+                 className="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-bl-none text-left"
+               >
+                 <p className="text-sm text-neutral-300">"Where can I find a safe 2-bedroom flat in Lagos for under 1.5M Naira?"</p>
+               </motion.div>
+               <motion.div 
+                 initial={{ opacity: 0, x: 20 }}
+                 whileInView={{ opacity: 1, x: 0 }}
+                 transition={{ delay: 0.5 }}
+                 className="bg-primary/20 border border-primary/30 p-4 rounded-2xl rounded-br-none text-right ml-auto max-w-[80%]"
+               >
+                 <div className="flex items-center justify-end gap-2 mb-1">
+                   <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                   <span className="text-[10px] uppercase font-bold tracking-widest text-primary">RentHub AI</span>
+                 </div>
+                 <p className="text-sm text-white">Based on recent data, I recommend exploring Yaba or certain parts of Surulere. Would you like to see verified listings there?</p>
+               </motion.div>
+             </div>
+
+             <Link to="/ai-advisor">
+               <Button size="lg" className="bg-primary text-white hover:bg-primary-dark px-12 py-8 text-lg rounded-full shadow-2xl shadow-primary/20 group">
+                 Start Chatting Now
+                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+               </Button>
+             </Link>
+           </div>
         </div>
       </section>
 
@@ -176,22 +296,59 @@ export const Home = () => {
   );
 };
 
-const FeatureCard = ({ icon, title, description }: { icon: any, title: string, description: string }) => (
-  <div className="rounded-2xl border border-neutral-100 bg-white p-8 shadow-sm transition-all hover:shadow-md">
-    <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light">
+const FloatingStat = ({ delay, className, icon, label }: { delay: number, className: string, icon: React.ReactNode, label: string }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, duration: 0.8 }}
+    className={cn(
+      "absolute z-10 flex items-center gap-3 bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl animate-float",
+      className
+    )}
+  >
+    <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
       {icon}
     </div>
-    <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">{title}</h3>
-    <p className="text-sm text-neutral-500 leading-relaxed">{description}</p>
-  </div>
+    <span className="text-white font-display font-bold text-sm whitespace-nowrap">{label}</span>
+  </motion.div>
 );
 
-const Badge = ({ children, variant, className }: any) => (
-  <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold", variant === "info" ? "bg-primary-light text-primary" : "bg-neutral-100 text-neutral-600", className)}>
-    {children}
-  </span>
-);
+const FeatureRow = ({ number, title, description, icon, reverse }: { number: string, title: string, description: string, icon: React.ReactNode, reverse: boolean }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
-}
+  return (
+    <div ref={ref} className={cn("flex flex-col md:flex-row items-center gap-16 lg:gap-32", reverse && "md:flex-row-reverse")}>
+      <motion.div 
+        initial={{ opacity: 0, x: reverse ? 50 : -50 }}
+        animate={isInView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.8 }}
+        className="flex-1 relative"
+      >
+        <div className="absolute -top-12 -left-8 text-[120px] font-display font-bold text-ink/5 leading-none select-none">
+          {number}
+        </div>
+        <div className="relative z-10">
+          <div className="h-20 w-20 bg-ink rounded-2xl flex items-center justify-center mb-8 border-2 border-primary shadow-xl shadow-primary/10">
+            {icon}
+          </div>
+          <h3 className="text-4xl md:text-5xl font-display font-bold text-ink mb-6 tracking-tight">{title}</h3>
+          <p className="text-xl text-neutral-500 font-sans leading-relaxed max-w-md">{description}</p>
+        </div>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="flex-1 w-full aspect-square bg-neutral-200 rounded-[48px] overflow-hidden relative group shadow-2xl"
+      >
+        <div className="absolute inset-0 bg-ink/20 group-hover:bg-ink/10 transition-colors duration-500" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          {/* Placeholder for feature visual */}
+          <div className="text-ink/20 font-display font-bold text-2xl uppercase tracking-[0.3em]">Visual Preview</div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};

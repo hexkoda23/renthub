@@ -8,10 +8,13 @@ import { ELECTRICITY_BANDS, WATER_OPTIONS, PARKING_OPTIONS, PROPERTY_CONDITIONS,
 import { 
   BedDouble, Bath, MapPin, CheckCircle, Share2, Heart, ChevronLeft,
   Calendar, ShieldCheck, Zap, Droplets, Car, Home, FileText, 
-  Clock, AlertTriangle, Info
+  Clock, AlertTriangle, Info, Copy, Check
 } from "lucide-react";
 import { PropertyGallery } from "../components/listings/PropertyGallery";
 import { ContactCard } from "../components/listings/ContactCard";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const formatNGN = (price: number) => {
   return new Intl.NumberFormat("en-NG", {
@@ -29,6 +32,7 @@ const formatCompact = (price: number) => {
 
 export const ListingDetails = () => {
   const { id } = useParams<{ id: string }>();
+  const [isCopied, setIsCopied] = useState(false);
   
   const { data, isLoading, error } = useQuery({
     queryKey: ["listing", id],
@@ -37,6 +41,13 @@ export const ListingDetails = () => {
   });
 
   const listing = data?.data?.data;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setIsCopied(true);
+    toast.success("Link copied to clipboard!");
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   if (isLoading) return <LoadingSkeleton />;
   if (error || !listing) return <ErrorState />;
@@ -48,319 +59,387 @@ export const ListingDetails = () => {
   const titleInfo = LAND_TITLES.find(t => t.value === listing.landTitle);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-sand/20">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8">
-        {/* Breadcrumbs & Back */}
-        <div className="mb-6 flex items-center justify-between">
-          <Link to="/listings" className="flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors">
-            <ChevronLeft className="mr-1 h-4 w-4" />
+      <main className="container mx-auto px-4 py-12 max-w-7xl">
+        {/* Navigation & Actions */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-10 flex items-center justify-between"
+        >
+          <Link to="/listings" className="group flex items-center text-sm font-bold text-ink/60 hover:text-clay transition-all">
+            <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm group-hover:bg-clay group-hover:text-white transition-all">
+              <ChevronLeft className="h-4 w-4" />
+            </div>
             Back to listings
           </Link>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             {!listing.source || listing.source === "renthub" || listing.source === "handover" ? (
               <>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2 rounded-full border-clay/10 bg-white hover:bg-clay hover:text-white transition-all">
                   <Share2 className="h-4 w-4" /> Share
                 </Button>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2 rounded-full border-clay/10 bg-white hover:bg-clay hover:text-white transition-all">
                   <Heart className="h-4 w-4" /> Save
                 </Button>
               </>
             ) : null}
           </div>
-        </div>
+        </motion.div>
 
         {listing.source === "jiji" && (
-          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-neutral-50 p-4 animate-in fade-in slide-in-from-top-2">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white font-bold text-xs uppercase">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-10 flex flex-col md:flex-row items-center gap-6 rounded-[2rem] border border-clay/10 bg-white p-8 shadow-xl"
+          >
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-ink text-white font-display font-bold text-2xl">
               J
             </div>
-            <div>
-              <p className="text-sm font-bold text-neutral-900">Extenal Listing Sourced from Jiji.ng</p>
-              <p className="text-xs text-neutral-500">Contact the seller directly via the original Jiji listing page.</p>
+            <div className="flex-1 text-center md:text-left">
+              <p className="text-xl font-display font-bold text-ink">External Listing Sourced from Jiji.ng</p>
+              <p className="text-ink/50 font-medium">This property is managed by an external vendor. View details on Jiji.</p>
             </div>
-            <a 
-              href={listing.externalUrl} 
-              target="_blank" 
-              rel="noreferrer" 
-              className="ml-auto"
-            >
-              <Button size="sm" className="gap-2">
-                View on Jiji <Share2 className="h-3 w-3" />
+            <a href={listing.externalUrl} target="_blank" rel="noreferrer">
+              <Button className="h-14 px-8 rounded-2xl bg-ink hover:bg-ink/90 text-white gap-3 font-bold">
+                View on Jiji <Share2 className="h-4 w-4" />
               </Button>
             </a>
-          </div>
+          </motion.div>
         )}
 
         {/* Gallery */}
-        <PropertyGallery images={listing.images} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <PropertyGallery images={listing.images} />
+        </motion.div>
 
         {/* Content Grid */}
-        <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* Main Info */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-12">
             {/* Header */}
             <section>
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    <Badge variant="neutral" className="capitalize">{listing.type}</Badge>
-                    {listing.verified && (
-                      <Badge variant="info" className="gap-1">
-                        <CheckCircle className="h-3 w-3" /> Verified
-                      </Badge>
-                    )}
-                    {listing.listingPurpose && (
-                      <Badge variant="success" className="capitalize">
-                        {listing.listingPurpose === "rent" ? "For Rent" : listing.listingPurpose === "sale" ? "For Sale" : "Shortlet"}
-                      </Badge>
-                    )}
-                    {listing.listingType && (
-                      <Badge variant={listing.listingType === "owner" ? "info" : "warning"}>
-                        {listing.listingType === "owner" ? "🏠 Owner" : "🏢 Agent"}
-                      </Badge>
-                    )}
-                    {listing.isNegotiable && (
-                      <Badge variant="success" className="gap-1">💰 Negotiable</Badge>
-                    )}
-                    {listing.isHandoverListing && (
-                      <Badge variant="warning" className="gap-1">🔄 Handover</Badge>
-                    )}
-                  </div>
-                  <h1 className="text-3xl font-bold font-sora text-neutral-900 md:text-4xl">{listing.title}</h1>
-                  <div className="mt-3 flex items-center gap-1.5 text-neutral-500">
-                    <MapPin className="h-4 w-4" />
-                    <span>{listing.address}, {listing.city}, {listing.state}</span>
-                  </div>
-                  {listing.estateName && (
-                    <div className="mt-1 flex items-center gap-1.5 text-neutral-400 text-sm">
-                      <Home className="h-3 w-3" />
-                      <span>{listing.estateName}</span>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="neutral" className="bg-clay/10 text-clay border-none px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">{listing.type}</Badge>
+                  {listing.verified && (
+                    <Badge className="bg-palm/10 text-palm border-none px-4 py-1.5 rounded-full text-xs font-bold gap-1.5">
+                      <CheckCircle className="h-3.5 w-3.5" /> Verified
+                    </Badge>
+                  )}
+                  {listing.listingPurpose && (
+                    <Badge className="bg-ink text-white border-none px-4 py-1.5 rounded-full text-xs font-bold capitalize">
+                      {listing.listingPurpose === "rent" ? "For Rent" : listing.listingPurpose === "sale" ? "For Sale" : "Shortlet"}
+                    </Badge>
+                  )}
+                  {listing.listingType && (
+                    <Badge className={`${listing.listingType === "owner" ? "bg-clay/10 text-clay" : "bg-sand text-ink"} border-none px-4 py-1.5 rounded-full text-xs font-bold`}>
+                      {listing.listingType === "owner" ? "🏠 Owner" : "🏢 Agent"}
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                  <div className="space-y-4">
+                    <h1 className="text-5xl md:text-6xl font-serif text-ink leading-tight">{listing.title}</h1>
+                    <div className="flex items-center gap-2 text-ink/50 font-medium">
+                      <MapPin className="h-5 w-5 text-clay" />
+                      <span className="text-lg">{listing.address}, {listing.city}, {listing.state}</span>
                     </div>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-primary">
-                    {formatCompact(listing.yearlyPrice || listing.price)}
-                    <span className="text-sm font-normal text-neutral-500">
-                      /{listing.rentFrequency === "monthly" ? "mo" : "yr"}
-                    </span>
-                  </p>
-                  {listing.rentFrequency === "yearly" && listing.yearlyPrice && (
-                    <p className="mt-1 text-sm text-neutral-400">
-                      ≈ {formatCompact(listing.price / 12)}/month
+                  </div>
+                  <div className="md:text-right space-y-1">
+                    <p className="text-4xl md:text-5xl font-display font-bold text-clay">
+                      {formatCompact(listing.yearlyPrice || listing.price)}
                     </p>
-                  )}
-                  {conditionInfo && (
-                    <span className="mt-2 inline-block text-xs rounded-full bg-neutral-100 px-3 py-1 text-neutral-600 font-medium">
-                      {conditionInfo.emoji} {conditionInfo.label}
-                    </span>
-                  )}
+                    <p className="text-ink/40 font-bold uppercase tracking-widest text-sm">
+                      Per {listing.rentFrequency === "monthly" ? "Month" : "Year"}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Quick Specs */}
-              <div className="mt-8 grid grid-cols-2 gap-4 rounded-2xl border border-neutral-100 bg-neutral-50 p-6 sm:grid-cols-4">
-                <div className="text-center sm:border-r border-neutral-200">
-                  <BedDouble className="mx-auto mb-2 h-6 w-6 text-neutral-400" />
-                  <p className="text-sm font-bold text-neutral-900">{listing.bedrooms} Bedrooms</p>
+                {/* Quick Specs */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-10 border-y border-clay/10">
+                  <div className="space-y-1">
+                    <p className="text-ink/40 text-xs font-bold uppercase tracking-widest">Bedrooms</p>
+                    <div className="flex items-center gap-3">
+                      <BedDouble className="h-5 w-5 text-clay" />
+                      <p className="text-xl font-display font-bold text-ink">{listing.bedrooms}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-ink/40 text-xs font-bold uppercase tracking-widest">Bathrooms</p>
+                    <div className="flex items-center gap-3">
+                      <Bath className="h-5 w-5 text-clay" />
+                      <p className="text-xl font-display font-bold text-ink">{listing.bathrooms}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-ink/40 text-xs font-bold uppercase tracking-widest">Status</p>
+                    <div className="flex items-center gap-3">
+                      <ShieldCheck className="h-5 w-5 text-palm" />
+                      <p className="text-xl font-display font-bold text-ink">{listing.verified ? "Verified" : "Unverified"}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-ink/40 text-xs font-bold uppercase tracking-widest">Listed On</p>
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5 text-clay" />
+                      <p className="text-xl font-display font-bold text-ink">{new Date(listing.createdAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-center sm:border-r border-neutral-200">
-                  <Bath className="mx-auto mb-2 h-6 w-6 text-neutral-400" />
-                  <p className="text-sm font-bold text-neutral-900">{listing.bathrooms} Bathrooms</p>
-                </div>
-                <div className="text-center sm:border-r border-neutral-200">
-                  <Calendar className="mx-auto mb-2 h-6 w-6 text-neutral-400" />
-                  <p className="text-sm font-bold text-neutral-900">Added {new Date(listing.createdAt).toLocaleDateString()}</p>
-                </div>
-                <div className="text-center">
-                  <ShieldCheck className="mx-auto mb-2 h-6 w-6 text-neutral-400" />
-                  <p className="text-sm font-bold text-neutral-900">{listing.verified ? "Verified" : "Unverified"}</p>
-                </div>
-              </div>
-            </section>
-
-            {/* Property Conditions Card */}
-            <section>
-              <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">⚡ Property Conditions</h3>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {/* Electricity */}
-                <div className={`rounded-2xl border p-5 ${elecInfo ? elecInfo.bg : "border-neutral-200 bg-neutral-50"}`}>
-                  <Zap className={`mb-2 h-6 w-6 ${elecInfo ? elecInfo.color : "text-neutral-400"}`} />
-                  <p className={`text-sm font-bold ${elecInfo ? elecInfo.color : "text-neutral-600"}`}>
-                    {elecInfo ? elecInfo.label : "Unknown"}
-                  </p>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    {elecInfo ? elecInfo.description : "No data"}
-                  </p>
-                </div>
-                {/* Water */}
-                <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
-                  <Droplets className="mb-2 h-6 w-6 text-blue-500" />
-                  <p className="text-sm font-bold text-blue-700">
-                    {waterInfo ? waterInfo.label : "Unknown"}
-                  </p>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    {waterInfo?.value === "running" ? "24/7 water supply available" : waterInfo?.value === "not-running" ? "Water available but not always running" : "No water supply"}
-                  </p>
-                </div>
-                {/* Parking */}
-                <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-                  <Car className="mb-2 h-6 w-6 text-neutral-500" />
-                  <p className="text-sm font-bold text-neutral-700">
-                    {parkingInfo ? parkingInfo.label : "Unknown"}
-                  </p>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    {parkingInfo?.value === "compound" ? "Parking within the compound" : parkingInfo?.value === "nearby" ? "Parking available nearby" : parkingInfo?.value === "street" ? "Street parking only" : "No parking available"}
-                  </p>
-                </div>
-              </div>
+              </motion.div>
             </section>
 
             {/* Description */}
-            <section>
-              <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">Description</h3>
-              <p className="text-neutral-600 leading-relaxed whitespace-pre-line">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <h3 className="text-3xl font-display font-bold text-ink">About this property</h3>
+              <p className="text-ink/70 text-lg leading-relaxed whitespace-pre-line font-medium max-w-3xl">
                 {listing.description}
               </p>
-            </section>
+            </motion.section>
+
+            {/* Property Conditions */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <h3 className="text-3xl font-display font-bold text-ink">Property Conditions</h3>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                {/* Electricity */}
+                <div className={`rounded-[2rem] border p-8 transition-all hover:shadow-xl ${elecInfo ? "bg-white border-clay/10" : "border-clay/5 bg-sand/20"}`}>
+                  <div className={`mb-6 h-14 w-14 rounded-2xl flex items-center justify-center ${elecInfo ? "bg-clay/10 text-clay" : "bg-ink/5 text-ink/20"}`}>
+                    <Zap className="h-7 w-7" />
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-ink/30 mb-1">Electricity</p>
+                  <p className="text-xl font-display font-bold text-ink mb-2">
+                    {elecInfo ? elecInfo.label : "Unknown"}
+                  </p>
+                  <p className="text-sm text-ink/50 font-medium">
+                    {elecInfo ? elecInfo.description : "No data available"}
+                  </p>
+                </div>
+
+                {/* Water */}
+                <div className="rounded-[2rem] border border-clay/10 bg-white p-8 transition-all hover:shadow-xl">
+                  <div className="mb-6 h-14 w-14 rounded-2xl bg-palm/10 text-palm flex items-center justify-center">
+                    <Droplets className="h-7 w-7" />
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-ink/30 mb-1">Water Supply</p>
+                  <p className="text-xl font-display font-bold text-ink mb-2">
+                    {waterInfo ? waterInfo.label : "Unknown"}
+                  </p>
+                  <p className="text-sm text-ink/50 font-medium">
+                    {waterInfo?.value === "running" ? "24/7 steady water supply" : waterInfo?.value === "not-running" ? "Intermittent water supply" : "No direct supply"}
+                  </p>
+                </div>
+
+                {/* Parking */}
+                <div className="rounded-[2rem] border border-clay/10 bg-white p-8 transition-all hover:shadow-xl">
+                  <div className="mb-6 h-14 w-14 rounded-2xl bg-ink/5 text-ink flex items-center justify-center">
+                    <Car className="h-7 w-7" />
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-ink/30 mb-1">Parking</p>
+                  <p className="text-xl font-display font-bold text-ink mb-2">
+                    {parkingInfo ? parkingInfo.label : "Unknown"}
+                  </p>
+                  <p className="text-sm text-ink/50 font-medium">
+                    {parkingInfo?.value === "compound" ? "Secure compound parking" : "Nearby or street parking"}
+                  </p>
+                </div>
+              </div>
+            </motion.section>
 
             {/* Fees Breakdown */}
             {(listing.agentFee || listing.cautionFee || listing.agreementFee) && (
-              <section>
-                <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">💰 Fees Breakdown</h3>
-                <div className="rounded-2xl border border-neutral-100 overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-neutral-50 border-b border-neutral-100">
-                        <th className="text-left p-4 font-semibold text-neutral-600">Fee</th>
-                        <th className="text-right p-4 font-semibold text-neutral-600">Amount (₦)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-neutral-50">
-                        <td className="p-4 text-neutral-700 font-medium">Rent ({listing.rentFrequency || "yearly"})</td>
-                        <td className="p-4 text-right font-bold text-neutral-900">{formatNGN(listing.yearlyPrice || listing.price)}</td>
-                      </tr>
-                      {listing.agentFee != null && listing.agentFee > 0 && (
-                        <tr className="border-b border-neutral-50">
-                          <td className="p-4 text-neutral-700 font-medium">Agent / Commission Fee</td>
-                          <td className="p-4 text-right font-bold text-orange-600">{formatNGN(listing.agentFee)}</td>
-                        </tr>
-                      )}
-                      {listing.cautionFee != null && listing.cautionFee > 0 && (
-                        <tr className="border-b border-neutral-50">
-                          <td className="p-4 text-neutral-700 font-medium">Caution Fee (refundable)</td>
-                          <td className="p-4 text-right font-bold text-neutral-900">{formatNGN(listing.cautionFee)}</td>
-                        </tr>
-                      )}
-                      {listing.agreementFee != null && listing.agreementFee > 0 && (
-                        <tr className="border-b border-neutral-50">
-                          <td className="p-4 text-neutral-700 font-medium">Agreement Fee</td>
-                          <td className="p-4 text-right font-bold text-neutral-900">{formatNGN(listing.agreementFee)}</td>
-                        </tr>
-                      )}
-                      <tr className="bg-primary/5">
-                        <td className="p-4 text-neutral-900 font-bold">Total to Move In</td>
-                        <td className="p-4 text-right font-bold text-primary text-lg">
-                          {formatNGN(
-                            (listing.yearlyPrice || listing.price) + 
-                            (listing.agentFee || 0) + 
-                            (listing.cautionFee || 0) + 
-                            (listing.agreementFee || 0)
-                          )}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
+              <motion.section 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <h3 className="text-3xl font-display font-bold text-ink">Financial Breakdown</h3>
+                <div className="rounded-[2.5rem] bg-white border border-clay/10 overflow-hidden shadow-sm">
+                  <div className="p-8 space-y-6">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-lg font-bold text-ink">Base Rent</p>
+                        <p className="text-sm text-ink/50 font-medium uppercase tracking-wider">{listing.rentFrequency || "yearly"}</p>
+                      </div>
+                      <p className="text-xl font-display font-bold text-ink">{formatNGN(listing.yearlyPrice || listing.price)}</p>
+                    </div>
 
-            {/* Land Title & Property Info */}
-            {(titleInfo || listing.estateName || listing.packOutDate) && (
-              <section>
-                <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">📋 Property Info</h3>
-                <div className="space-y-3">
-                  {titleInfo && (
-                    <div className="flex items-center gap-3 rounded-xl border border-neutral-100 p-4">
-                      <FileText className="h-5 w-5 text-neutral-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-bold text-neutral-900">Land Title</p>
-                        <p className="text-xs text-neutral-500">{titleInfo.label}</p>
+                    {listing.agentFee != null && listing.agentFee > 0 && (
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-lg font-bold text-ink">Agent & Commission</p>
+                          <p className="text-sm text-ink/50 font-medium">One-time payment</p>
+                        </div>
+                        <p className="text-xl font-display font-bold text-clay">{formatNGN(listing.agentFee)}</p>
                       </div>
-                      <div className="ml-auto">
-                        <span className="group relative">
-                          <Info className="h-4 w-4 text-neutral-300 cursor-help" />
-                        </span>
+                    )}
+
+                    {listing.cautionFee != null && listing.cautionFee > 0 && (
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-lg font-bold text-ink">Caution Fee</p>
+                          <p className="text-sm text-ink/50 font-medium italic">Refundable deposit</p>
+                        </div>
+                        <p className="text-xl font-display font-bold text-ink">{formatNGN(listing.cautionFee)}</p>
                       </div>
+                    )}
+
+                    {listing.agreementFee != null && listing.agreementFee > 0 && (
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-lg font-bold text-ink">Legal & Agreement</p>
+                          <p className="text-sm text-ink/50 font-medium">Processing fees</p>
+                        </div>
+                        <p className="text-xl font-display font-bold text-ink">{formatNGN(listing.agreementFee)}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-ink p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                      <h4 className="text-white/60 text-sm font-bold uppercase tracking-[0.2em] mb-1">Total Move-in Cost</h4>
+                      <p className="text-white/40 text-xs font-medium italic">Including all legal and agent fees</p>
                     </div>
-                  )}
-                  {listing.packOutDate && (
-                    <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                      <Clock className="h-5 w-5 text-amber-500 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-bold text-amber-700">Pack-out Date</p>
-                        <p className="text-xs text-amber-600">Current tenant leaves {new Date(listing.packOutDate).toLocaleDateString("en-NG", { year: "numeric", month: "long", day: "numeric" })}</p>
-                      </div>
-                    </div>
-                  )}
+                    <p className="text-5xl font-display font-bold text-white">
+                      {formatNGN(
+                        (listing.yearlyPrice || listing.price) + 
+                        (listing.agentFee || 0) + 
+                        (listing.cautionFee || 0) + 
+                        (listing.agreementFee || 0)
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </section>
+              </motion.section>
             )}
 
             {/* Amenities */}
-            <section>
-              <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">Amenities</h3>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <h3 className="text-3xl font-display font-bold text-ink">Amenities & Features</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {listing.amenities.map((amenity: string, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm text-neutral-600 rounded-xl border border-neutral-100 p-3">
-                    <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                    {amenity}
+                  <div key={idx} className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-clay/5 group hover:border-clay/20 transition-all">
+                    <div className="h-10 w-10 rounded-full bg-palm/5 text-palm flex items-center justify-center group-hover:bg-palm group-hover:text-white transition-all">
+                      <CheckCircle className="h-5 w-5" />
+                    </div>
+                    <span className="font-bold text-ink">{amenity}</span>
                   </div>
                 ))}
               </div>
-            </section>
+            </motion.section>
+
+            {/* Property Info & Legal */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6 pb-12"
+            >
+              <h3 className="text-3xl font-display font-bold text-ink">Legal & Compliance</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {titleInfo && (
+                  <div className="flex items-start gap-6 rounded-[2rem] border border-clay/10 bg-white p-8">
+                    <div className="h-14 w-14 rounded-2xl bg-clay/10 text-clay flex items-center justify-center shrink-0">
+                      <FileText className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-xl font-display font-bold text-ink">Land Title</p>
+                        <Info className="h-4 w-4 text-ink/20" />
+                      </div>
+                      <p className="text-ink/60 font-medium">{titleInfo.label}</p>
+                    </div>
+                  </div>
+                )}
+                {listing.packOutDate && (
+                  <div className="flex items-start gap-6 rounded-[2rem] border border-clay/10 bg-clay/5 p-8">
+                    <div className="h-14 w-14 rounded-2xl bg-white text-clay flex items-center justify-center shrink-0">
+                      <Clock className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-display font-bold text-ink mb-1">Availability</p>
+                      <p className="text-ink/60 font-medium">Available from {new Date(listing.packOutDate).toLocaleDateString("en-NG", { year: "numeric", month: "long", day: "numeric" })}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.section>
           </div>
 
-          {/* Contact Card & Sidebar */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
+            <div className="sticky top-28 space-y-8">
               {listing.source === "jiji" ? (
-                <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-xl">
-                  <h3 className="mb-4 text-xl font-bold font-sora text-neutral-900">Interested?</h3>
-                  <p className="text-sm text-neutral-500 mb-6 font-medium">As this property is listed on Jiji.ng, you'll need to view the original ad to see contact details.</p>
+                <div className="rounded-[2.5rem] border border-clay/10 bg-white p-8 shadow-2xl">
+                  <h3 className="mb-6 text-2xl font-display font-bold text-ink">External Listing</h3>
+                  <p className="text-ink/50 mb-8 font-medium">This property is listed on Jiji.ng. Please contact the seller directly through their platform.</p>
                   <a href={listing.externalUrl} target="_blank" rel="noreferrer" className="block w-full">
-                    <Button className="w-full py-6 text-lg shadow-xl shadow-primary/20">
+                    <Button className="w-full h-16 rounded-2xl bg-ink text-white font-bold text-lg shadow-xl shadow-ink/20">
                       View on Jiji →
                     </Button>
                   </a>
-                  <div className="mt-6 pt-6 border-t border-neutral-50 text-[10px] text-neutral-400 text-center uppercase tracking-widest font-bold">
-                    Ref: {listing.externalId?.slice(0, 8)}
-                  </div>
                 </div>
               ) : (
                 <ContactCard listingId={listing.id} landlordId={listing.landlordId} propertyTitle={listing.title} />
               )}
               
-              <div className="rounded-2xl bg-primary/5 p-6 border border-primary/10">
-                <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
-                  <Share2 className="h-4 w-4" />
-                  Share with friends
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="rounded-[2.5rem] bg-clay p-10 text-white shadow-2xl shadow-clay/20 relative overflow-hidden group"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-white/20 transition-colors" />
+                <h4 className="text-2xl font-display font-bold mb-4 flex items-center gap-3">
+                  <Share2 className="h-6 w-6" />
+                  Invite a friend
                 </h4>
-                <p className="text-xs text-neutral-500 mb-4">Finding a home is better with a roommate.</p>
-                <Button variant="outline" size="sm" className="w-full">Copy Link</Button>
-              </div>
+                <p className="text-white/70 mb-8 font-medium leading-relaxed">Finding the perfect home is better with someone you trust. Share this listing.</p>
+                <Button 
+                  onClick={handleCopyLink}
+                  variant="outline" 
+                  className="w-full h-14 rounded-2xl border-white/20 bg-white/10 hover:bg-white text-white hover:text-clay font-bold transition-all gap-2"
+                >
+                  {isCopied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                  {isCopied ? "Link Copied!" : "Copy Link"}
+                </Button>
+              </motion.div>
 
               {listing.isHandoverListing && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div className="rounded-[2rem] border border-sand bg-sand/30 p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shrink-0">
+                      <AlertTriangle className="h-6 w-6 text-clay" />
+                    </div>
                     <div>
-                      <h4 className="font-bold text-amber-700 mb-1">Handover Listing</h4>
-                      <p className="text-xs text-amber-600">This property is being listed by the current tenant who is moving out. Verify details directly with the landlord.</p>
+                      <h4 className="font-display font-bold text-ink mb-1 text-lg">Handover Listing</h4>
+                      <p className="text-sm text-ink/60 font-medium">This is a tenant-to-tenant transfer. Please verify all documents with the property owner.</p>
                     </div>
                   </div>
                 </div>
@@ -376,30 +455,45 @@ export const ListingDetails = () => {
 };
 
 const LoadingSkeleton = () => (
-  <div className="min-h-screen bg-white">
+  <div className="min-h-screen bg-sand/20">
     <Navbar />
-    <div className="container mx-auto px-4 py-8 animate-pulse">
-      <div className="mb-6 h-4 w-32 bg-neutral-100 rounded" />
-      <div className="h-[400px] w-full bg-neutral-100 rounded-3xl" />
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="h-10 w-3/4 bg-neutral-100 rounded" />
-          <div className="h-6 w-1/2 bg-neutral-100 rounded" />
-          <div className="h-24 w-full bg-neutral-100 rounded" />
+    <div className="container mx-auto px-4 py-12 max-w-7xl animate-pulse space-y-12">
+      <div className="h-10 w-48 bg-white rounded-full" />
+      <div className="h-[600px] w-full bg-white rounded-[2.5rem]" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="lg:col-span-2 space-y-10">
+          <div className="h-20 w-3/4 bg-white rounded-2xl" />
+          <div className="h-8 w-1/2 bg-white rounded-full" />
+          <div className="h-40 w-full bg-white rounded-[2rem]" />
+          <div className="grid grid-cols-3 gap-6">
+            <div className="h-48 bg-white rounded-[2rem]" />
+            <div className="h-48 bg-white rounded-[2rem]" />
+            <div className="h-48 bg-white rounded-[2rem]" />
+          </div>
         </div>
-        <div className="lg:col-span-1 h-64 bg-neutral-100 rounded-3xl" />
+        <div className="lg:col-span-1 h-[500px] bg-white rounded-[2.5rem]" />
       </div>
     </div>
   </div>
 );
 
 const ErrorState = () => (
-  <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
-    <h1 className="text-6xl mb-4">😰</h1>
-    <h2 className="text-2xl font-bold mb-2">Property not found</h2>
-    <p className="text-neutral-500 mb-8">We couldn't find the listing you're looking for.</p>
-    <Link to="/listings">
-      <Button>Go back to listings</Button>
-    </Link>
+  <div className="min-h-screen bg-sand/20 flex flex-col items-center justify-center p-8 text-center">
+    <motion.div
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className="bg-white p-16 rounded-[3rem] shadow-2xl border border-clay/10 max-w-lg"
+    >
+      <div className="text-8xl mb-8">🏠</div>
+      <h2 className="text-4xl font-serif text-ink mb-4">Property Not Found</h2>
+      <p className="text-ink/50 text-lg font-medium mb-10 leading-relaxed">
+        We couldn't find the property you're looking for. It might have been taken or the link is broken.
+      </p>
+      <Link to="/listings">
+        <Button className="h-16 px-10 rounded-2xl bg-clay hover:bg-clay/90 text-white font-bold text-lg">
+          Browse Other Properties
+        </Button>
+      </Link>
+    </motion.div>
   </div>
 );

@@ -8,18 +8,19 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-rent text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center rounded-full text-sm font-display font-semibold tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 active:scale-95",
   {
     variants: {
       variant: {
-        primary: "bg-primary text-white hover:bg-primary-dark shadow-sm",
-        secondary: "bg-secondary text-white hover:bg-secondary-dark shadow-sm",
-        outline: "border border-neutral-200 bg-transparent hover:bg-neutral-50 text-neutral-700",
+        primary: "bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/30 shadow-sm",
+        secondary: "bg-ink text-white hover:bg-ink-soft shadow-sm",
+        outline: "border border-neutral-200 bg-transparent hover:border-primary hover:text-primary text-neutral-700",
         ghost: "hover:bg-neutral-100 text-neutral-600",
         danger: "bg-red-500 text-white hover:bg-red-600",
+        dark: "bg-ink text-white hover:bg-ink-soft",
       },
       size: {
-        sm: "h-9 px-3",
+        sm: "h-9 px-4",
         md: "h-11 px-6",
         lg: "h-14 px-8 text-base",
       },

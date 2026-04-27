@@ -34,10 +34,11 @@ export const PriceTag = ({
   shortletPricing,
   className = "" 
 }: PriceTagProps) => {
+  const colorClass = className.includes("text-") ? "" : "text-primary";
   
   if (purpose === "sale" && salePrice) {
     return (
-      <span className={`font-bold text-primary ${className}`}>
+      <span className={`font-bold ${colorClass} ${className}`}>
         {formatCompact(salePrice)}
       </span>
     );
@@ -45,18 +46,18 @@ export const PriceTag = ({
 
   if (purpose === "shortlet" && shortletPricing) {
     return (
-      <span className={`font-bold text-primary ${className}`}>
+      <span className={`font-bold ${colorClass} ${className}`}>
         {formatNGN(shortletPricing.perNight)}
-        <span className="text-[10px] font-normal text-neutral-500">/night</span>
+        <span className="text-[10px] font-normal opacity-70">/night</span>
       </span>
     );
   }
 
   // Default: Rent
   return (
-    <span className={`font-bold text-primary ${className}`}>
+    <span className={`font-bold ${colorClass} ${className}`}>
       {formatCompact(price)}
-      <span className="text-[10px] font-normal text-neutral-500">
+      <span className="text-[10px] font-normal opacity-70">
         /{rentFrequency === "monthly" ? "mo" : "yr"}
       </span>
     </span>

@@ -11,67 +11,50 @@ interface ListingFiltersProps {
 
 export const ListingFilters = ({ filters, onFilterChange, onClear }: ListingFiltersProps) => {
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 sticky top-24 shadow-sm">
-      <div className="mb-6 flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-lg font-bold font-sora text-neutral-900">
+    <div className="rounded-[32px] border border-neutral-200 bg-white p-8 sticky top-24 shadow-sm">
+      <div className="mb-8 flex items-center justify-between">
+        <h3 className="flex items-center gap-3 text-xl font-bold font-display text-ink">
           <Filter className="h-5 w-5 text-primary" /> Filters
         </h3>
         <button 
           onClick={onClear} 
-          className="text-sm font-medium text-neutral-500 hover:text-primary transition-colors"
+          className="text-sm font-display font-bold text-neutral-400 hover:text-primary transition-colors"
         >
-          Clear all
+          Reset
         </button>
       </div>
 
-      <div className="space-y-6">
-        {/* Listing Purpose Tabs */}
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">Purpose</label>
-          <div className="flex gap-1 rounded-xl bg-neutral-100 p-1">
-            <button
-              onClick={() => onFilterChange({ purpose: "" })}
-              className={`flex-1 rounded-lg px-3 py-2 text-xs font-bold transition-all ${
-                !filters.purpose ? "bg-white text-neutral-900 shadow-sm" : "text-neutral-500 hover:text-neutral-700"
-              }`}
-            >
-              All
-            </button>
-            {LISTING_PURPOSES.map(p => (
-              <button
-                key={p.value}
-                onClick={() => onFilterChange({ purpose: p.value })}
-                className={`flex-1 rounded-lg px-3 py-2 text-xs font-bold transition-all ${
-                  filters.purpose === p.value ? "bg-white text-neutral-900 shadow-sm" : "text-neutral-500 hover:text-neutral-700"
-                }`}
-              >
-                {p.label.replace("For ", "")}
-              </button>
-            ))}
-          </div>
-        </div>
-
+      <div className="space-y-8">
         {/* Location */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">Location</label>
-          <select 
-            className="w-full rounded-xl border border-neutral-200 p-3 text-sm focus:ring-2 focus:ring-primary outline-none transition-all bg-neutral-50"
-            value={filters.state}
-            onChange={(e) => onFilterChange({ state: e.target.value })}
-          >
-            <option value="">All States</option>
-            {NIGERIA_STATES.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
-          </select>
+          <label className="mb-3 block text-sm font-display font-bold text-ink">Location</label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-2xl border border-neutral-100 p-4 pr-10 text-sm font-medium focus:ring-4 focus:ring-primary/5 outline-none transition-all bg-sand/30 text-neutral-700"
+              value={filters.state}
+              onChange={(e) => onFilterChange({ state: e.target.value })}
+            >
+              <option value="">All States</option>
+              {NIGERIA_STATES.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+              <Filter className="h-4 w-4" />
+            </div>
+          </div>
         </div>
 
         {/* Property Type */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">Property Type</label>
-          <div className="grid grid-cols-2 gap-2">
+          <label className="mb-4 block text-sm font-display font-bold text-ink">Property Type</label>
+          <div className="grid grid-cols-1 gap-2">
             {PROPERTY_TYPES.map(type => (
               <label 
                 key={type} 
-                className={`flex cursor-pointer items-center gap-2 rounded-xl border p-3 hover:bg-neutral-50 transition-all ${filters.type === type ? "border-primary bg-primary/5 shadow-sm" : "border-neutral-100"}`}
+                className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition-all ${
+                  filters.type === type 
+                    ? "border-primary bg-primary/5" 
+                    : "border-neutral-50 bg-neutral-50/50 hover:bg-neutral-50"
+                }`}
               >
                 <input 
                   type="radio" 
@@ -80,45 +63,53 @@ export const ListingFilters = ({ filters, onFilterChange, onClear }: ListingFilt
                   onChange={() => onFilterChange({ type })}
                   className="h-4 w-4 border-neutral-300 text-primary focus:ring-primary" 
                 />
-                <span className={`text-xs font-medium ${filters.type === type ? "text-primary" : "text-neutral-600"}`}>{type}</span>
+                <span className={`text-sm font-bold ${filters.type === type ? "text-primary" : "text-neutral-600"}`}>
+                  {type}
+                </span>
               </label>
             ))}
           </div>
         </div>
 
         {/* Price Range */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-neutral-700">Min Price</label>
-            <Input 
-              type="number" 
-              placeholder="Min" 
-              className="h-11 rounded-xl"
-              value={filters.minPrice}
-              onChange={(e) => onFilterChange({ minPrice: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-neutral-700">Max Price (₦)</label>
-            <Input 
-              type="number" 
-              placeholder="Max" 
-              className="h-11 rounded-xl"
-              value={filters.maxPrice}
-              onChange={(e) => onFilterChange({ maxPrice: e.target.value })}
-            />
+        <div>
+          <label className="mb-4 block text-sm font-display font-bold text-ink">Price Range (₦)</label>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <Input 
+                type="number" 
+                placeholder="Min" 
+                className="h-12 rounded-2xl bg-sand/30 border-none text-sm font-bold"
+                value={filters.minPrice}
+                onChange={(e) => onFilterChange({ minPrice: e.target.value })}
+              />
+            </div>
+            <div className="w-4 h-px bg-neutral-200" />
+            <div className="flex-1">
+              <Input 
+                type="number" 
+                placeholder="Max" 
+                className="h-12 rounded-2xl bg-sand/30 border-none text-sm font-bold"
+                value={filters.maxPrice}
+                onChange={(e) => onFilterChange({ maxPrice: e.target.value })}
+              />
+            </div>
           </div>
         </div>
 
         {/* Bedrooms */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">Bedrooms</label>
+          <label className="mb-4 block text-sm font-display font-bold text-ink">Bedrooms</label>
           <div className="flex flex-wrap gap-2">
             {[1, 2, 3, 4, 5].map(num => (
               <button 
                 key={num} 
                 onClick={() => onFilterChange({ bedrooms: filters.bedrooms == num ? "" : num })}
-                className={`flex-1 min-w-[40px] rounded-xl border py-2.5 text-sm font-bold transition-all ${filters.bedrooms == num ? "border-primary bg-primary text-white shadow-md" : "border-neutral-200 text-neutral-600 hover:border-primary hover:text-primary"}`}
+                className={`h-11 w-11 rounded-xl font-display font-bold text-sm transition-all border ${
+                  filters.bedrooms == num 
+                    ? "border-primary bg-primary text-white shadow-lg shadow-primary/20" 
+                    : "border-neutral-100 bg-neutral-50 text-neutral-500 hover:border-primary/30 hover:text-primary"
+                }`}
               >
                 {num}+
               </button>
@@ -126,79 +117,10 @@ export const ListingFilters = ({ filters, onFilterChange, onClear }: ListingFilt
           </div>
         </div>
 
-        {/* Electricity Band */}
+        {/* Source */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">⚡ NEPA / Electricity</label>
-          <div className="space-y-1.5">
-            {ELECTRICITY_BANDS.filter(b => b.value !== "none").map(band => (
-              <label 
-                key={band.value}
-                className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
-                  filters.electricityBand === band.value ? `${band.bg} shadow-sm` : "border-neutral-100 hover:bg-neutral-50"
-                }`}
-              >
-                <input 
-                  type="radio"
-                  name="electricityBand"
-                  checked={filters.electricityBand === band.value}
-                  onChange={() => onFilterChange({ electricityBand: filters.electricityBand === band.value ? "" : band.value })}
-                  className="h-4 w-4 text-primary"
-                />
-                <div>
-                  <span className={`text-xs font-bold ${band.color}`}>{band.label}</span>
-                  <span className="text-[10px] text-neutral-400 ml-2">{band.description}</span>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Owner / Agent Toggle */}
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">Listed By</label>
-          <div className="flex gap-2">
-            <button
-              onClick={() => onFilterChange({ listingType: filters.listingType === "owner" ? "" : "owner" })}
-              className={`flex-1 rounded-xl border py-2.5 text-xs font-bold transition-all ${
-                filters.listingType === "owner" ? "border-blue-400 bg-blue-50 text-blue-600" : "border-neutral-200 text-neutral-600 hover:border-blue-300"
-              }`}
-            >
-              🏠 Owner
-            </button>
-            <button
-              onClick={() => onFilterChange({ listingType: filters.listingType === "agent" ? "" : "agent" })}
-              className={`flex-1 rounded-xl border py-2.5 text-xs font-bold transition-all ${
-                filters.listingType === "agent" ? "border-orange-400 bg-orange-50 text-orange-600" : "border-neutral-200 text-neutral-600 hover:border-orange-300"
-              }`}
-            >
-              🏢 Agent
-            </button>
-          </div>
-        </div>
-
-        {/* Negotiable Toggle */}
-        <div>
-          <label 
-            className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
-              filters.negotiable === "true" ? "border-green-400 bg-green-50" : "border-neutral-100 hover:bg-neutral-50"
-            }`}
-          >
-            <input 
-              type="checkbox"
-              checked={filters.negotiable === "true"}
-              onChange={() => onFilterChange({ negotiable: filters.negotiable === "true" ? "" : "true" })}
-              className="h-4 w-4 text-primary rounded"
-            />
-            <span className={`text-xs font-bold ${filters.negotiable === "true" ? "text-green-600" : "text-neutral-600"}`}>
-              💰 Negotiable only
-            </span>
-          </label>
-        </div>
-
-        {/* Property Source */}
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-700">Property Source</label>
-          <div className="flex gap-1 rounded-xl bg-neutral-100 p-1 relative">
+          <label className="mb-4 block text-sm font-display font-bold text-ink">Listing Source</label>
+          <div className="flex gap-1 rounded-2xl bg-neutral-100 p-1.5">
             {[
               { id: "", label: "All" },
               { id: "renthub", label: "RentHub" },
@@ -207,14 +129,14 @@ export const ListingFilters = ({ filters, onFilterChange, onClear }: ListingFilt
               <button
                 key={tab.label}
                 onClick={() => onFilterChange({ source: tab.id })}
-                className={`flex-1 relative rounded-lg px-2 py-2 text-[10px] font-bold transition-all z-10 ${
-                  filters.source === tab.id ? "text-neutral-900" : "text-neutral-500"
+                className={`flex-1 relative rounded-xl py-2.5 text-[11px] font-display font-bold transition-all z-10 ${
+                  filters.source === tab.id ? "text-ink" : "text-neutral-500"
                 }`}
               >
                 {filters.source === tab.id && (
                   <motion.div
                     layoutId="listingSourceTab"
-                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                    className="absolute inset-0 bg-white rounded-xl shadow-sm"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -225,10 +147,11 @@ export const ListingFilters = ({ filters, onFilterChange, onClear }: ListingFilt
         </div>
 
         <Button 
-          className="w-full py-6 rounded-xl shadow-lg shadow-primary/20"
+          size="lg"
+          className="w-full h-14 rounded-2xl shadow-xl shadow-primary/20 font-display font-bold text-base"
           onClick={() => onFilterChange({})}
         >
-          Apply Filters
+          Show Results
         </Button>
       </div>
     </div>
