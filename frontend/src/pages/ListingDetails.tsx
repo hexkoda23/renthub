@@ -4,10 +4,10 @@ import { listingsService } from "../services/listings.service";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { Button, Badge } from "../components/ui";
-import { ELECTRICITY_BANDS, WATER_OPTIONS, PARKING_OPTIONS, PROPERTY_CONDITIONS, LAND_TITLES } from "@renthub/shared";
+import { ELECTRICITY_BANDS, WATER_OPTIONS, PARKING_OPTIONS, LAND_TITLES } from "@renthub/shared";
 import { 
   BedDouble, Bath, MapPin, CheckCircle, Share2, Heart, ChevronLeft,
-  Calendar, ShieldCheck, Zap, Droplets, Car, Home, FileText, 
+  Calendar, ShieldCheck, Zap, Droplets, Car, FileText, 
   Clock, AlertTriangle, Info, Copy, Check
 } from "lucide-react";
 import { PropertyGallery } from "../components/listings/PropertyGallery";
@@ -55,7 +55,6 @@ export const ListingDetails = () => {
   const elecInfo = ELECTRICITY_BANDS.find(b => b.value === listing.electricityBand);
   const waterInfo = WATER_OPTIONS.find(w => w.value === listing.waterSituation);
   const parkingInfo = PARKING_OPTIONS.find(p => p.value === listing.parkingSituation);
-  const conditionInfo = PROPERTY_CONDITIONS.find(c => c.value === listing.propertyCondition);
   const titleInfo = LAND_TITLES.find(t => t.value === listing.landTitle);
 
   return (

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { cn } from "../../utils/cn";
 import { Twitter, Instagram, Linkedin, Send } from "lucide-react";
 
 export const Footer = () => {

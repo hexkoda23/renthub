@@ -1,6 +1,6 @@
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
-import { ShieldCheck, CheckCircle, Camera, UserCheck, ShieldAlert, Zap, ArrowRight, Shield } from "lucide-react";
+import { ShieldCheck, CheckCircle, Camera, UserCheck, ShieldAlert, Zap, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const VerificationInfo = () => {

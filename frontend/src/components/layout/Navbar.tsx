@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Button } from "../ui";
 import { useAuth } from "../../hooks/useAuth";
-import { User, LogOut, Menu, X, Plus } from "lucide-react";
+import { LogOut, Menu, X, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../utils/cn";
 

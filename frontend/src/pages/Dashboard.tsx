@@ -3,7 +3,7 @@ import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "../components/ui";
-import { Bell, Search, Trash2, ArrowRight, Home, Settings, LogOut, User as UserIcon, Sparkles } from "lucide-react";
+import { Bell, Search, Trash2, ArrowRight, Home, Settings, LogOut, Sparkles } from "lucide-react";
 import api from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";

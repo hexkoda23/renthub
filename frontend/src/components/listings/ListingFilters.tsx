@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { NIGERIA_STATES, PROPERTY_TYPES, ELECTRICITY_BANDS, LISTING_PURPOSES } from "@renthub/shared";
+import { NIGERIA_STATES, PROPERTY_TYPES } from "@renthub/shared";
 import { Button, Input } from "../ui";
 import { Filter } from "lucide-react";
 
