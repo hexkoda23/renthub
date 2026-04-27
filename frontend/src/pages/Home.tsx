@@ -28,10 +28,17 @@ export const Home = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-32 px-6 overflow-hidden bg-ink">
-        {/* Cinematic background */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute inset-0 bg-grain opacity-40 pointer-events-none" />
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-32 px-6 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-ink">
+          <img 
+            src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=2000" 
+            alt="Lagos Luxury"
+            className="absolute inset-0 w-full h-full object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/40 to-ink" />
+          <div className="absolute inset-0 bg-grain opacity-20 pointer-events-none" />
+        </div>
         
         <div className="container mx-auto relative z-10">
           <div className="flex flex-col items-center text-center">
@@ -170,6 +177,49 @@ export const Home = () => {
         </div>
       </section>
 
+      {/* Why RentHub - Value Propositions */}
+      <section className="py-32 bg-sand/50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-display font-bold text-ink mb-6">Redefining <span className="text-primary italic font-serif">Proptech</span> in Nigeria</h2>
+            <p className="text-neutral-500 max-w-2xl mx-auto text-lg">We've combined local insights with world-class technology to solve the biggest challenges in the Nigerian rental market.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { 
+                title: "Zero Agent Fees", 
+                desc: "By facilitating direct handovers between tenants, we eliminate the need for traditional agents and their exorbitant fees.",
+                icon: "💰"
+              },
+              { 
+                title: "100% Verified", 
+                desc: "Every single property undergoes a rigorous multi-step verification process before it goes live on our platform.",
+                icon: "✅"
+              },
+              { 
+                title: "AI Matchmaking", 
+                desc: "Our Llama 3.3 powered advisor analyzes your lifestyle to suggest neighbourhoods that truly fit your personality.",
+                icon: "🤖"
+              }
+            ].map((card, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -10 }}
+                className="bg-white p-10 rounded-[32px] border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300"
+              >
+                <div className="text-4xl mb-6">{card.icon}</div>
+                <h3 className="text-2xl font-display font-bold text-ink mb-4">{card.title}</h3>
+                <p className="text-neutral-500 leading-relaxed">{card.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-32 bg-sand relative">
         <div className="container mx-auto px-6">
@@ -180,6 +230,7 @@ export const Home = () => {
               description="Every property on RentHub is manually verified to ensure descriptions and photos match reality. No more fake listings or agent scams."
               icon={<Shield className="h-10 w-10 text-primary" />}
               reverse={false}
+              image="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200"
             />
             <FeatureRow 
               number="02"
@@ -187,6 +238,7 @@ export const Home = () => {
               description="Get personalized recommendations based on safety scores, traffic patterns, and your specific budget. We help you find a community, not just a house."
               icon={<MessageSquare className="h-10 w-10 text-primary" />}
               reverse={true}
+              image="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200"
             />
             <FeatureRow 
               number="03"
@@ -194,7 +246,51 @@ export const Home = () => {
               description="Our proprietary digital handover flow ensures a smooth transition between outgoing and incoming tenants, saving you thousands in agent fees."
               icon={<Zap className="h-10 w-10 text-primary" />}
               reverse={false}
+              image="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Curated Neighbourhoods */}
+      <section className="py-32 bg-ink overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="mb-20">
+            <Badge variant="glass" className="mb-6">EXPLORE LAGOS</Badge>
+            <h2 className="text-5xl md:text-7xl font-display font-bold text-white mb-8 tracking-tighter">
+              Curated <span className="font-serif italic text-primary">Neighbourhoods</span>
+            </h2>
+            <p className="text-xl text-neutral-400 max-w-2xl font-sans leading-relaxed">
+              From the serene streets of Old Ikoyi to the vibrant tech hubs of Yaba, discover the perfect community for your lifestyle.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: "Ikoyi", tag: "Luxury & Serenity", img: "https://images.unsplash.com/photo-1590059536034-780c8e217278?auto=format&fit=crop&q=80&w=800" },
+              { name: "Lekki Phase 1", tag: "Vibrant Lifestyle", img: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800" },
+              { name: "Victoria Island", tag: "Business Central", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" },
+              { name: "Maitama", tag: "Abuja Elite", img: "https://images.unsplash.com/photo-1600585154340-be6199f7e009?auto=format&fit=crop&q=80&w=800" }
+            ].map((area, i) => (
+              <motion.div
+                key={area.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative aspect-[3/4] rounded-[32px] overflow-hidden cursor-pointer"
+              >
+                <img 
+                  src={area.img} 
+                  alt={area.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-80" />
+                <div className="absolute bottom-8 left-8">
+                  <span className="text-primary font-display font-bold text-xs uppercase tracking-widest mb-2 block">{area.tag}</span>
+                  <h3 className="text-3xl font-display font-bold text-white tracking-tight">{area.name}</h3>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -313,7 +409,7 @@ const FloatingStat = ({ delay, className, icon, label }: { delay: number, classN
   </motion.div>
 );
 
-const FeatureRow = ({ number, title, description, icon, reverse }: { number: string, title: string, description: string, icon: React.ReactNode, reverse: boolean }) => {
+const FeatureRow = ({ number, title, description, icon, reverse, image }: { number: string, title: string, description: string, icon: React.ReactNode, reverse: boolean, image: string }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -343,11 +439,12 @@ const FeatureRow = ({ number, title, description, icon, reverse }: { number: str
         transition={{ duration: 0.8, delay: 0.2 }}
         className="flex-1 w-full aspect-square bg-neutral-200 rounded-[48px] overflow-hidden relative group shadow-2xl"
       >
+        <img 
+          src={image} 
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
         <div className="absolute inset-0 bg-ink/20 group-hover:bg-ink/10 transition-colors duration-500" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          {/* Placeholder for feature visual */}
-          <div className="text-ink/20 font-display font-bold text-2xl uppercase tracking-[0.3em]">Visual Preview</div>
-        </div>
       </motion.div>
     </div>
   );

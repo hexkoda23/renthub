@@ -4,19 +4,25 @@ import dotenv from "dotenv";
 import path from "path";
 
 // Load env from root
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: "C:/Users/Hp/Documents/renthub-main/.env" });
 
 if (!admin.apps.length) {
+  const privateKey = (process.env.FIREBASE_PRIVATE_KEY || "")
+    .replace(/\\n/g, "\n")
+    .replace(/^"|"$/g, ""); // Remove any accidental wrapping quotes
+
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      privateKey: privateKey,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    }),
+    })
   });
 }
 
+// Explicitly get the default firestore instance
 const db = admin.firestore();
+db.settings({ ignoreUndefinedProperties: true });
 
 const seedListings: Partial<Listing>[] = [
   {
@@ -103,24 +109,21 @@ const seedListings: Partial<Listing>[] = [
 
 async function seed() {
   console.log("🚀 Starting data seeding...");
+  console.log("Project ID:", process.env.FIREBASE_PROJECT_ID);
   
   try {
-    const listingsCol = db.collection("listings");
-    
-    // Clear existing (optional, but good for clean dev state)
-    // const existing = await listingsCol.get();
-    // const batch = db.batch();
-    // existing.forEach(doc => batch.delete(doc.ref));
-    // await batch.commit();
+    const listingsCollection = db.collection("listings");
+    console.log("Collection reference created.");
 
     for (const listing of seedListings) {
-      await listingsCol.add(listing);
-      console.log(`✅ Added: ${listing.title}`);
+      console.log(`Adding: ${listing.title}...`);
+      const docRef = await listingsCollection.add({ ...listing, createdAt: new Date().toISOString() });
+      console.log(`✅ Added with ID: ${docRef.id}`);
     }
 
     console.log("✨ Seeding completed successfully!");
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Seeding failed:", error);
     process.exit(1);
   }
