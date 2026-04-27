@@ -141,19 +141,26 @@ export const Navbar = () => {
             </div>
 
             <div className="flex flex-col gap-6">
-              {["Home", "Rent", "Buy", "AI Advisor", "Handover"].map((item, i) => (
+              {[
+                { label: "Home", to: "/" },
+                { label: "Rent", to: "/listings?purpose=rent" },
+                { label: "Buy", to: "/listings?purpose=sale" },
+                { label: "AI Advisor", to: "/ai-advisor" },
+                { label: "Handover", to: "/handover" },
+                { label: "List Property", to: "/create-listing" }
+              ].map((item, i) => (
                 <motion.div
-                  key={item}
+                  key={item.label}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
                 >
                   <Link 
-                    to={item === "Home" ? "/" : `/listings?purpose=${item.toLowerCase()}`}
+                    to={item.to}
                     onClick={() => setIsOpen(false)}
                     className="text-4xl font-display font-bold text-white hover:text-primary transition-colors"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </motion.div>
               ))}
