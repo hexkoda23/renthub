@@ -1,7 +1,7 @@
 import { db } from "../config/firebase";
-import { Listing } from "@renthub/shared";
+import { Listing } from "@renthob/shared";
 
-// We define the type locally or we could put it in @renthub/shared
+// We define the type locally or we could put it in @renthob/shared
 export interface HandoverAlert {
   id?: string;
   userId: string | null;
@@ -81,12 +81,12 @@ export class HandoverService {
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            from: "RentHub Handover <onboarding@resend.dev>", // onboarding address for resend testing
+            from: "RentHob Handover <onboarding@resend.dev>", // onboarding address for resend testing
             to: alert.email,
             subject: "A new handover apartment matched your search!",
             text: `Hi ${alert.firstName},
 
-A verified handover apartment matching your search just dropped on RentHub.
+A verified handover apartment matching your search just dropped on RentHob.
 
 Details:
 Title: ${listing.title}
@@ -97,7 +97,7 @@ Act fast, these places don't sit around for long:
 ${process.env.CLIENT_URL}/listings/${listing.id}
 
 Best,
-RentHub Team`,
+RentHob Team`,
           }),
         });
 

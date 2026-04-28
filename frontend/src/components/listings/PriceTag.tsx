@@ -1,4 +1,4 @@
-import { ListingPurpose, RentFrequency } from "@renthub/shared";
+import { ListingPurpose, RentFrequency } from "@renthob/shared";
 
 interface PriceTagProps {
   price: number;

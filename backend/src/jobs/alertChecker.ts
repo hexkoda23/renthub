@@ -60,13 +60,13 @@ export const runAlertCheck = async () => {
               Authorization: `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-              from: "RentHub Alerts <onboarding@resend.dev>",
-              to: userEmail.includes("renthub.local") ? "delivered@resend.dev" : userEmail,
+              from: "RentHob Alerts <onboarding@resend.dev>",
+              to: userEmail.includes("renthob.local") ? "delivered@resend.dev" : userEmail,
               subject: `✨ New property matches: ${search.name}`,
               html: `
                 <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 20px;">
                   <div style="text-align: center; margin-bottom: 30px;">
-                    <h1 style="color: #6366f1; margin: 0;">RentHub</h1>
+                    <h1 style="color: #6366f1; margin: 0;">RentHob</h1>
                     <p style="color: #666; font-size: 14px;">Marketplace & Handover Network</p>
                   </div>
                   

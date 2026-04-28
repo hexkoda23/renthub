@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { NIGERIA_STATES, PROPERTY_TYPES } from "@renthub/shared";
+import { NIGERIA_STATES, PROPERTY_TYPES } from "@renthob/shared";
 import { Button, Input } from "../ui";
 import { Filter } from "lucide-react";
 
@@ -123,7 +123,7 @@ export const ListingFilters = ({ filters, onFilterChange, onClear }: ListingFilt
           <div className="flex gap-1 rounded-2xl bg-neutral-100 p-1.5">
             {[
               { id: "", label: "All" },
-              { id: "renthub", label: "RentHub" },
+              { id: "renthob", label: "RentHob" },
               { id: "jiji", label: "Jiji.ng" }
             ].map((tab) => (
               <button

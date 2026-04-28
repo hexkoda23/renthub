@@ -26,7 +26,7 @@ export const About = () => {
                 in Modern Nigeria
               </h1>
               <p className="text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed font-sans">
-                RentHub was born out of a simple frustration: finding a reliable, verified, and transparent property in Nigeria is too hard. We're on a mission to bring trust back to the marketplace using AI and a "human-first" verification process.
+                RentHob was born out of a simple frustration: finding a reliable, verified, and transparent property in Nigeria is too hard. We're on a mission to bring trust back to the marketplace using AI and a "human-first" verification process.
               </p>
             </motion.div>
           </div>
@@ -66,7 +66,7 @@ export const About = () => {
                   <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
                     <ShieldCheck className="text-primary h-6 w-6 mb-4" />
                     <h4 className="font-bold text-lg mb-2">Verified Peace</h4>
-                    <p className="text-neutral-500 text-sm leading-relaxed">Every RentHub-verified listing is checked by our team locally.</p>
+                    <p className="text-neutral-500 text-sm leading-relaxed">Every RentHob-verified listing is checked by our team locally.</p>
                   </div>
                 </div>
               </motion.div>
@@ -131,7 +131,7 @@ export const About = () => {
              <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
              <div className="relative z-10 max-w-2xl mx-auto">
                <h2 className="text-4xl md:text-6xl font-display font-bold mb-8 leading-tight">Ready to find your <span className="text-primary italic font-serif">dream home</span>?</h2>
-               <p className="text-neutral-400 mb-12 text-lg">Join thousands of Nigerians using RentHub to discover verified properties.</p>
+               <p className="text-neutral-400 mb-12 text-lg">Join thousands of Nigerians using RentHob to discover verified properties.</p>
                <motion.button
                  whileHover={{ scale: 1.05 }}
                  whileTap={{ scale: 0.95 }}

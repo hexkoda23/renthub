@@ -24,7 +24,7 @@ export const AIAdvisor = () => {
               <span className="text-primary italic font-serif">Advisor</span>
             </h1>
             <p className="text-neutral-600 text-base leading-relaxed">
-              Powered by Groq's Llama 3.3 and RentHub's verified area database. Get local insights you won't find anywhere else.
+              Powered by Groq's Llama 3.3 and RentHob's verified area database. Get local insights you won't find anywhere else.
             </p>
           </motion.div>
 

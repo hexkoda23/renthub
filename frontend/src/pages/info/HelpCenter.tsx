@@ -82,15 +82,15 @@ export const HelpCenter = () => {
             <div className="space-y-4">
               <FaqItem 
                 question="How do I know if a property is really verified?" 
-                answer="Look for the 'Verified' badge on the property card. This means one of our RentHub representatives has physically visited the property, verified the owner's identity, and confirmed the photos match the building."
+                answer="Look for the 'Verified' badge on the property card. This means one of our RentHob representatives has physically visited the property, verified the owner's identity, and confirmed the photos match the building."
               />
               <FaqItem 
-                question="Can I trust Jiji listings on RentHub?" 
-                answer="Jiji listings are synced for your convenience to offer the widest choice. However, we do not manually verify Jiji listings unless they also have the RentHub 'Verified' badge. Always proceed with caution."
+                question="Can I trust Jiji listings on RentHob?" 
+                answer="Jiji listings are synced for your convenience to offer the widest choice. However, we do not manually verify Jiji listings unless they also have the RentHob 'Verified' badge. Always proceed with caution."
               />
               <FaqItem 
-                question="Do I have to pay any commission to RentHub?" 
-                answer="No. RentHub is free for property seekers. We make money by offering premium listing placement and verification services to agents and landlords."
+                question="Do I have to pay any commission to RentHob?" 
+                answer="No. RentHob is free for property seekers. We make money by offering premium listing placement and verification services to agents and landlords."
               />
               <FaqItem 
                 question="What is the AI Advisor?" 

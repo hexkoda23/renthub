@@ -1,5 +1,5 @@
 import { db } from "../config/firebase";
-import { User } from "@renthub/shared";
+import { User } from "@renthob/shared";
 
 const COLLECTION = "users";
 

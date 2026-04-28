@@ -51,8 +51,8 @@ export const Contact = () => {
                 <h4 className="text-xl font-display font-bold text-ink mb-2">Email Us</h4>
                 <p className="text-neutral-500 mb-4">Our team typically responds within 2 hours.</p>
                 <div className="space-y-1">
-                  <p className="text-ink font-bold">support@renthub.ng</p>
-                  <p className="text-ink font-bold">hello@renthub.ng</p>
+                  <p className="text-ink font-bold">support@renthob.ng</p>
+                  <p className="text-ink font-bold">hello@renthob.ng</p>
                 </div>
               </div>
 
@@ -62,7 +62,7 @@ export const Contact = () => {
                 </div>
                 <h4 className="text-xl font-display font-bold mb-2">WhatsApp Direct</h4>
                 <p className="text-neutral-400 mb-4">Fastest response for urgent property inquiries.</p>
-                <p className="text-primary text-2xl font-display font-bold">+234 (0) 800-RENTHUB</p>
+                <p className="text-primary text-2xl font-display font-bold">+234 (0) 800-RENTHOB</p>
               </div>
 
               <div className="group p-8 rounded-[2rem] bg-white border border-neutral-200/60 shadow-xl shadow-ink/5 hover:border-primary/30 transition-all duration-500">

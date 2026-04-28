@@ -1,5 +1,5 @@
 import api from "./api";
-import { Listing, ApiResponse, PaginatedResponse } from "@renthub/shared";
+import { Listing, ApiResponse, PaginatedResponse } from "@renthob/shared";
 
 export const listingsService = {
   getListings: (filters: any) => 

@@ -1,4 +1,4 @@
-import { NIGERIA_STATES } from "@renthub/shared";
+import { NIGERIA_STATES } from "@renthob/shared";
 
 export const getLGAsForState = (stateName: string) => {
   const state = NIGERIA_STATES.find(s => s.name.toLowerCase() === stateName.toLowerCase());

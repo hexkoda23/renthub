@@ -12,7 +12,7 @@ export class UploadsService {
     const uploadPromises = files.map((file) => {
       return new Promise<string>((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "renthub/listings" },
+          { folder: "renthob/listings" },
           (error, result) => {
             if (error) return reject(error);
             resolve(result?.secure_url || "");

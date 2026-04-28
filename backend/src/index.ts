@@ -11,5 +11,5 @@ initJijiSync();
 const PORT = env.PORT || 3000;
 
 app.listen(PORT, () => {
-  logger.info(`RentHub API is running on port ${PORT} in ${env.NODE_ENV} mode`);
+  logger.info(`RentHob API is running on port ${PORT} in ${env.NODE_ENV} mode`);
 });

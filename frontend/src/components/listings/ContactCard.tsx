@@ -20,7 +20,7 @@ export const ContactCard = ({ listingId = "", landlordId, propertyTitle }: Conta
   const landlordPhone = "09000000000";
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent(`Hi, I'm interested in your property: "${propertyTitle}" listed on RentHub. Is it still available?`);
+    const message = encodeURIComponent(`Hi, I'm interested in your property: "${propertyTitle}" listed on RentHob. Is it still available?`);
     window.open(`https://wa.me/234${landlordPhone.slice(1)}?text=${message}`, "_blank");
   };
 

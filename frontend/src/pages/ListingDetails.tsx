@@ -1,17 +1,19 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { listingsService } from "../services/listings.service";
+import { aiService } from "../services/ai.service";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { Button, Badge } from "../components/ui";
-import { ELECTRICITY_BANDS, WATER_OPTIONS, PARKING_OPTIONS, LAND_TITLES } from "@renthub/shared";
+import { ELECTRICITY_BANDS, WATER_OPTIONS, PARKING_OPTIONS, LAND_TITLES } from "@renthob/shared";
 import { 
   BedDouble, Bath, MapPin, CheckCircle, Share2, Heart, ChevronLeft,
   Calendar, ShieldCheck, Zap, Droplets, Car, FileText, 
-  Clock, AlertTriangle, Info, Copy, Check
+  Clock, AlertTriangle, Info, Copy, Check, Bot, Sparkles, ChevronDown, ChevronUp
 } from "lucide-react";
 import { PropertyGallery } from "../components/listings/PropertyGallery";
 import { ContactCard } from "../components/listings/ContactCard";
+import { DEMO_LISTINGS } from "../components/listings/ListingGrid";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -30,6 +32,84 @@ const formatCompact = (price: number) => {
   return formatNGN(price);
 };
 
+// AI Neighbourhood Insight Widget
+const NeighbourhoodInsightWidget = ({ city, state, address }: { city: string; state: string; address: string }) => {
+  const [insight, setInsight] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const fetchInsight = async () => {
+    if (hasLoaded) {
+      setIsExpanded(!isExpanded);
+      return;
+    }
+    setIsLoading(true);
+    setIsExpanded(true);
+    try {
+      const prompt = `Give me a brief neighbourhood insight (3-4 sentences max) about ${address}, ${city}, ${state}, Nigeria. Cover: safety level, typical resident profile, key amenities nearby, and traffic situation. Be concise and practical for someone considering renting there.`;
+      const response = await aiService.sendMessage(prompt, undefined);
+      setInsight(response.data.data.content);
+      setHasLoaded(true);
+    } catch {
+      setInsight("Unable to load neighbourhood insights right now. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="rounded-3xl border border-primary/15 bg-gradient-to-br from-primary-50 to-white overflow-hidden">
+      <button
+        onClick={fetchInsight}
+        className="w-full flex items-center justify-between p-5 hover:bg-primary/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-2xl bg-primary-light flex items-center justify-center">
+            <Sparkles className="h-5 w-5 text-primary" />
+          </div>
+          <div className="text-left">
+            <p className="font-display font-bold text-sm text-neutral-900">AI Neighbourhood Insight</p>
+            <p className="text-xs text-neutral-400">About {city}, {state}</p>
+          </div>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="h-4 w-4 text-neutral-400" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-neutral-400" />
+        )}
+      </button>
+
+      {isExpanded && (
+        <div className="px-5 pb-5">
+          {isLoading ? (
+            <div className="flex items-center gap-3 py-3">
+              <Bot className="h-5 w-5 text-primary animate-pulse" />
+              <div className="flex gap-1">
+                <span className="h-2 w-2 bg-primary rounded-full animate-bounce [animation-delay:0ms]" />
+                <span className="h-2 w-2 bg-primary rounded-full animate-bounce [animation-delay:150ms]" />
+                <span className="h-2 w-2 bg-primary rounded-full animate-bounce [animation-delay:300ms]" />
+              </div>
+              <p className="text-xs text-neutral-400">Analysing neighbourhood...</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-neutral-600 leading-relaxed">{insight}</p>
+              <div className="flex items-center gap-2 pt-2 border-t border-primary/10">
+                <Bot className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs text-neutral-400">Powered by RentHob AI · </span>
+                <Link to="/ai-advisor" className="text-xs text-primary font-semibold hover:underline">
+                  Ask more questions →
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const ListingDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [isCopied, setIsCopied] = useState(false);
@@ -37,10 +117,11 @@ export const ListingDetails = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["listing", id],
     queryFn: () => listingsService.getListing(id!),
-    enabled: !!id
+    enabled: !!id && !id.startsWith("demo-")
   });
 
-  const listing = data?.data?.data;
+  const demoListing = id?.startsWith("demo-") ? DEMO_LISTINGS.find(l => l.id === id) : null;
+  const listing = demoListing || data?.data?.data;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -49,13 +130,13 @@ export const ListingDetails = () => {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  if (isLoading) return <LoadingSkeleton />;
-  if (error || !listing) return <ErrorState />;
+  if (isLoading && !demoListing) return <LoadingSkeleton />;
+  if ((error || !listing) && !demoListing) return <ErrorState />;
 
-  const elecInfo = ELECTRICITY_BANDS.find(b => b.value === listing.electricityBand);
-  const waterInfo = WATER_OPTIONS.find(w => w.value === listing.waterSituation);
-  const parkingInfo = PARKING_OPTIONS.find(p => p.value === listing.parkingSituation);
-  const titleInfo = LAND_TITLES.find(t => t.value === listing.landTitle);
+  const elecInfo = ELECTRICITY_BANDS.find((b: any) => b.value === listing.electricityBand);
+  const waterInfo = WATER_OPTIONS.find((w: any) => w.value === listing.waterSituation);
+  const parkingInfo = PARKING_OPTIONS.find((p: any) => p.value === listing.parkingSituation);
+  const titleInfo = LAND_TITLES.find((t: any) => t.value === listing.landTitle);
 
   return (
     <div className="min-h-screen bg-sand/20">
@@ -75,7 +156,7 @@ export const ListingDetails = () => {
             Back to listings
           </Link>
           <div className="flex gap-3">
-            {!listing.source || listing.source === "renthub" || listing.source === "handover" ? (
+            {!listing.source || listing.source === "renthob" || listing.source === "handover" ? (
               <>
                 <Button variant="outline" size="sm" className="gap-2 rounded-full border-clay/10 bg-white hover:bg-clay hover:text-white transition-all">
                   <Share2 className="h-4 w-4" /> Share
@@ -409,6 +490,8 @@ export const ListingDetails = () => {
               ) : (
                 <ContactCard listingId={listing.id} landlordId={listing.landlordId} propertyTitle={listing.title} />
               )}
+              {/* 2. AI NEIGHBOURHOOD INSIGHT WIDGET */}
+              <NeighbourhoodInsightWidget city={listing.city} state={listing.state} address={listing.address} />
               
               <motion.div 
                 whileHover={{ y: -5 }}
@@ -454,42 +537,42 @@ export const ListingDetails = () => {
 };
 
 const LoadingSkeleton = () => (
-  <div className="min-h-screen bg-sand/20">
+  <div className="min-h-screen bg-surface">
     <Navbar />
-    <div className="container mx-auto px-4 py-12 max-w-7xl animate-pulse space-y-12">
-      <div className="h-10 w-48 bg-white rounded-full" />
-      <div className="h-[600px] w-full bg-white rounded-[2.5rem]" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-10">
-          <div className="h-20 w-3/4 bg-white rounded-2xl" />
-          <div className="h-8 w-1/2 bg-white rounded-full" />
-          <div className="h-40 w-full bg-white rounded-[2rem]" />
-          <div className="grid grid-cols-3 gap-6">
-            <div className="h-48 bg-white rounded-[2rem]" />
-            <div className="h-48 bg-white rounded-[2rem]" />
-            <div className="h-48 bg-white rounded-[2rem]" />
+    <div className="container mx-auto px-4 py-12 max-w-7xl animate-pulse space-y-8">
+      <div className="h-8 w-32 bg-neutral-200 rounded-lg" />
+      <div className="h-[400px] w-full bg-neutral-200 rounded-3xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="h-16 w-3/4 bg-neutral-200 rounded-xl" />
+          <div className="h-6 w-1/2 bg-neutral-200 rounded-lg" />
+          <div className="h-32 w-full bg-neutral-200 rounded-2xl" />
+          <div className="grid grid-cols-3 gap-4">
+            <div className="h-32 bg-neutral-200 rounded-2xl" />
+            <div className="h-32 bg-neutral-200 rounded-2xl" />
+            <div className="h-32 bg-neutral-200 rounded-2xl" />
           </div>
         </div>
-        <div className="lg:col-span-1 h-[500px] bg-white rounded-[2.5rem]" />
+        <div className="lg:col-span-1 h-[400px] bg-neutral-200 rounded-3xl" />
       </div>
     </div>
   </div>
 );
 
 const ErrorState = () => (
-  <div className="min-h-screen bg-sand/20 flex flex-col items-center justify-center p-8 text-center">
+  <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-8 text-center">
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="bg-white p-16 rounded-[3rem] shadow-2xl border border-clay/10 max-w-lg"
+      className="bg-white p-12 rounded-3xl shadow-card border border-neutral-100 max-w-lg"
     >
-      <div className="text-8xl mb-8">🏠</div>
-      <h2 className="text-4xl font-serif text-ink mb-4">Property Not Found</h2>
-      <p className="text-ink/50 text-lg font-medium mb-10 leading-relaxed">
+      <div className="text-6xl mb-6">🏠</div>
+      <h2 className="text-2xl font-display font-bold text-ink mb-4">Property Not Found</h2>
+      <p className="text-neutral-500 text-lg mb-8">
         We couldn't find the property you're looking for. It might have been taken or the link is broken.
       </p>
       <Link to="/listings">
-        <Button className="h-16 px-10 rounded-2xl bg-clay hover:bg-clay/90 text-white font-bold text-lg">
+        <Button className="h-12 px-8 rounded-xl bg-primary text-white font-semibold">
           Browse Other Properties
         </Button>
       </Link>

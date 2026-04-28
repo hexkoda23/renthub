@@ -186,13 +186,13 @@ export const HandoverFlow = () => {
         {mode === "entry" && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <button onClick={() => navigate("/")} className="mb-12 text-sm text-neutral-500 hover:text-primary flex items-center gap-2 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back to RentHub
+              <ArrowLeft className="w-4 h-4" /> Back to RentHob
             </button>
             <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-neutral-900">
               Good places in Nigeria are rare. <br/>
               <span className="text-neutral-400 font-medium">Don't let yours go to waste.</span>
             </h1>
-            <p className="text-lg text-neutral-500 mb-12">The RentHub Handover network helps tenants bypass agents. List your outgoing apartment or get notified when one drops.</p>
+            <p className="text-lg text-neutral-500 mb-12">The RentHob Handover network helps tenants bypass agents. List your outgoing apartment or get notified when one drops.</p>
             
             <div className="flex flex-col gap-4">
               <ChoiceCard 
@@ -533,13 +533,13 @@ export const HandoverFlow = () => {
               </div>
             </div>
 
-            <a href={`https://wa.me/2349000000000?text=${encodeURIComponent("Hi, I just submitted my apartment on RentHub. Here are the photos:")}`} target="_blank" rel="noreferrer" className="block w-full mb-4">
+            <a href={`https://wa.me/2349000000000?text=${encodeURIComponent("Hi, I just submitted my apartment on RentHob. Here are the photos:")}`} target="_blank" rel="noreferrer" className="block w-full mb-4">
               <Button size="lg" className="w-full py-6 text-lg bg-[#25D366] hover:bg-[#20bd5a] text-white border-0">
                 Send Photos via WhatsApp
               </Button>
             </a>
 
-            <a href="https://t.me/renthub_nigeria" target="_blank" rel="noreferrer" className="block w-full">
+            <a href="https://t.me/renthob_nigeria" target="_blank" rel="noreferrer" className="block w-full">
               <Button size="lg" variant="outline" className="w-full py-6 text-lg border-neutral-200 hover:bg-[#229ED9] hover:border-[#229ED9] text-neutral-600 hover:text-white transition-all shadow-sm">
                 Join our Telegram for instant listing alerts →
               </Button>
@@ -560,7 +560,7 @@ export const HandoverFlow = () => {
               <p className="text-primary font-bold">Good places don't sit around in Nigeria — so act fast when you receive the email.</p>
             </div>
             <Button size="lg" className="w-full py-6 text-lg shadow-xl shadow-primary/20" onClick={() => navigate("/")}>
-               Return to RentHub
+               Return to RentHob
             </Button>
           </div>
         )}

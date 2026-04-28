@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Listing, ELECTRICITY_BANDS } from "@renthub/shared";
+import { Listing, ELECTRICITY_BANDS } from "@renthob/shared";
 import { Card, Badge } from "../ui";
 import { BedDouble, Bath, MapPin, Zap, Droplets } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -30,16 +30,25 @@ export const ListingCard = ({ listing }: ListingCardProps) => {
     return <Link to={`/listings/${listing.id}`}>{children}</Link>;
   };
 
+  const getPurposeBadge = () => {
+    switch (listing.listingPurpose) {
+      case "rent": return "For Rent";
+      case "sale": return "For Sale";
+      case "shortlet": return "Shortlet";
+      default: return listing.type;
+    }
+  };
+
   return (
     <CardWrapper>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -6, boxShadow: "0 20px 40px rgba(255,92,0,0.15)" }}
+        whileHover={{ y: -4 }}
         transition={{ duration: 0.3 }}
         className="h-full"
       >
-        <Card className="overflow-hidden p-0 group h-full transition-all duration-300 border-l-0 hover:border-l-4 hover:border-primary bg-white" clickable>
+        <Card className="overflow-hidden p-0 group h-full transition-all duration-300 rounded-3xl border border-neutral-100/60 shadow-card hover:shadow-card-hover bg-white" clickable>
           <div className="relative h-56 w-full overflow-hidden">
             <motion.img 
               src={listing.images[0] || "https://via.placeholder.com/400x300?text=No+Image"} 
@@ -49,87 +58,100 @@ export const ListingCard = ({ listing }: ListingCardProps) => {
               transition={{ duration: 0.6 }}
             />
             {/* Image Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             
             {/* Price on Image */}
             <div className="absolute bottom-4 left-4 z-10">
-              <PriceTag 
-                price={listing.price} 
-                purpose={listing.listingPurpose} 
-                rentFrequency={listing.rentFrequency}
-                salePrice={listing.salePrice}
-                shortletPricing={listing.shortletPricing}
-                className="text-2xl font-serif italic text-white"
-              />
-            </div>
-
-            {/* Top Badges */}
-            <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 z-10">
-              <Badge 
-                className="bg-ink/80 backdrop-blur-md border-none text-white px-3 py-1 rounded-full text-[10px] font-display uppercase tracking-wider"
-              >
-                {listing.type}
-              </Badge>
-            </div>
-
-            <div className="absolute right-3 top-3 flex flex-wrap gap-1.5 z-10">
-              {listing.verified && (
-                <Badge className="bg-white/20 backdrop-blur-md border border-white/30 text-white gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold">
-                  <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                  Verified
-                </Badge>
-              )}
-            </div>
-
-            {isJiji && (
-              <div className="absolute bottom-4 right-4 z-10">
-                <Badge className="bg-black/40 backdrop-blur-sm text-white/80 text-[9px] font-medium border-none py-0.5 px-2 rounded-full">
-                  via Jiji.ng
-                </Badge>
+              <div className="bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-xl">
+                <PriceTag 
+                  price={listing.price} 
+                  purpose={listing.listingPurpose} 
+                  rentFrequency={listing.rentFrequency}
+                  salePrice={listing.salePrice}
+                  shortletPricing={listing.shortletPricing}
+                  className="text-xl font-display font-bold text-white"
+                />
               </div>
-            )}
+            </div>
+
+            {/* Top Left - Purpose Badge */}
+            <div className="absolute left-3 top-3 z-10">
+              <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-ink">
+                {getPurposeBadge()}
+              </span>
+            </div>
+
+            {/* Top Right - Verified/Jiji Badge */}
+            <div className="absolute right-3 top-3 z-10">
+              {listing.verified ? (
+                <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-green-600 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Verified
+                </span>
+              ) : isJiji ? (
+                <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-neutral-600">
+                  via Jiji.ng
+                </span>
+              ) : null}
+            </div>
           </div>
           
           <div className="p-5">
-            <h3 className="mb-2 line-clamp-1 text-lg font-bold font-display text-neutral-900 group-hover:text-primary transition-colors">
+            <h3 className="mb-2 line-clamp-2 text-base font-display font-semibold text-neutral-900 group-hover:text-primary transition-colors">
               {listing.title}
             </h3>
             
-            <div className="mb-4 flex items-center gap-1.5 text-sm text-neutral-500">
-              <MapPin className="h-3.5 w-3.5 text-primary" />
+            <div className="mb-4 flex items-center gap-1.5 text-sm text-neutral-400">
+              <MapPin className="h-3.5 w-3.5" />
               <span className="truncate">{listing.city}, {listing.state}</span>
             </div>
             
             {/* Amenity pills */}
-            <div className="mb-5 flex flex-wrap gap-2 min-h-[24px]">
+            <div className="mb-4 flex flex-wrap gap-2 min-h-[24px]">
               {elecInfo && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-neutral-200 px-2.5 py-0.5 text-[10px] font-medium text-neutral-600">
-                  <Zap className="h-2.5 w-2.5 text-primary" />
+                <span className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-0.5 text-[10px] font-medium text-neutral-600">
+                  <Zap className="h-2.5 w-2.5" />
                   {elecInfo.label}
                 </span>
               )}
               {listing.waterSituation && listing.waterSituation !== "none" && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-neutral-200 px-2.5 py-0.5 text-[10px] font-medium text-neutral-600">
-                  <Droplets className="h-2.5 w-2.5 text-primary" />
+                <span className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-0.5 text-[10px] font-medium text-neutral-600">
+                  <Droplets className="h-2.5 w-2.5" />
                   {listing.waterSituation === "running" ? "Water" : "Limited Water"}
                 </span>
               )}
             </div>
 
             {/* Beds/Baths */}
-            <div className="flex items-center gap-6 border-t border-neutral-100 pt-4">
-              <div className="flex items-center gap-2 text-sm text-neutral-700 font-medium">
-                <BedDouble className="h-4 w-4 text-neutral-400" />
-                <span className="font-bold">{listing.bedrooms}</span>
-                <span className="text-neutral-500 text-xs">Beds</span>
-              </div>
-              {listing.bathrooms > 0 && (
-                <div className="flex items-center gap-2 text-sm text-neutral-700 font-medium">
-                  <Bath className="h-4 w-4 text-neutral-400" />
-                  <span className="font-bold">{listing.bathrooms}</span>
-                  <span className="text-neutral-500 text-xs">Baths</span>
+            <div className="flex items-center justify-between border-t border-neutral-100 pt-4 mb-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5 text-sm text-neutral-600">
+                  <BedDouble className="h-4 w-4 text-neutral-300" />
+                  <span className="font-semibold">{listing.bedrooms}</span>
+                  <span className="text-neutral-400 text-xs">Beds</span>
                 </div>
-              )}
+                {listing.bathrooms > 0 && (
+                  <div className="flex items-center gap-1.5 text-sm text-neutral-600">
+                    <Bath className="h-4 w-4 text-neutral-300" />
+                    <span className="font-semibold">{listing.bathrooms}</span>
+                    <span className="text-neutral-400 text-xs">Baths</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex gap-2 border-t border-neutral-100 pt-4">
+              <button 
+                className="flex-1 flex items-center justify-center gap-1.5 bg-primary-light text-primary hover:bg-primary hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all"
+              >
+                View Details
+              </button>
+              <button 
+                onClick={(e) => e.preventDefault()}
+                className="flex-1 flex items-center justify-center gap-1.5 bg-[#22C55E]/10 text-[#22C55E] hover:bg-[#22C55E] hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all"
+              >
+                Call Landlord
+              </button>
             </div>
           </div>
         </Card>

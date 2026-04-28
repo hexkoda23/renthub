@@ -9,6 +9,7 @@ if (!admin.apps.length) {
         privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
         clientEmail: env.FIREBASE_CLIENT_EMAIL,
       }),
+      databaseURL: `https://${env.FIREBASE_PROJECT_ID}.firebaseio.com`
     });
   } catch (error: any) {
     console.warn("Firebase Admin Initialization Warning: " + error.message);
@@ -23,6 +24,10 @@ let storageObj = {} as any;
 if (admin.apps.length > 0) {
   authObj = admin.auth();
   dbObj = admin.firestore();
+  // Standard Firestore configuration
+  dbObj.settings({
+    ignoreUndefinedProperties: true,
+  });
   storageObj = admin.storage();
 }
 

@@ -1,5 +1,5 @@
 import { db } from "../config/firebase";
-import { Listing, PropertyType } from "@renthub/shared";
+import { Listing, PropertyType } from "@renthob/shared";
 
 const COLLECTION = "listings";
 

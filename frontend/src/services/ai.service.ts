@@ -1,5 +1,5 @@
 import api from "./api";
-import { ApiResponse } from "@renthub/shared";
+import { ApiResponse } from "@renthob/shared";
 
 export const aiService = {
   sendMessage: (message: string, conversationId?: string) => 

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { User } from "@renthub/shared";
+import { User } from "@renthob/shared";
 
 interface AuthState {
   user: User | null;
@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
       clearAuth: () => set({ user: null, isAuthenticated: false, isLoading: false }),
     }),
     {
-      name: "renthub-auth",
+      name: "renthob-auth",
     }
   )
 );

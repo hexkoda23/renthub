@@ -18,7 +18,7 @@ import {
   LAND_TITLES, 
   LISTING_PURPOSES,
   AMENITIES
-} from "@renthub/shared";
+} from "@renthob/shared";
 
 const createListingSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),

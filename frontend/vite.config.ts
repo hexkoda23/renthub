@@ -4,9 +4,11 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  envDir: "../",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@renthob/shared": path.resolve(__dirname, "../shared/src"),
     },
   },
   server: {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Search, MapPin, Building } from "lucide-react";
 import { Button } from "../ui";
 import { useNavigate } from "react-router-dom";
-import { NIGERIA_STATES, PROPERTY_TYPES } from "@renthub/shared";
+import { NIGERIA_STATES, PROPERTY_TYPES } from "@renthob/shared";
 
 export const SearchBar = ({ purpose }: { purpose?: string }) => {
   const [query, setQuery] = useState("");

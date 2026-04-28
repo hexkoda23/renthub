@@ -30,7 +30,7 @@ export const SaveSearchButton = () => {
     // Attempt somewhat smart defaults for name
     const type = searchParams.get("type");
     const city = searchParams.get("city");
-    const parsedName = [type, city].filter(Boolean).join(" in ") || "My RentHub Search";
+    const parsedName = [type, city].filter(Boolean).join(" in ") || "My RentHob Search";
     setSearchName(parsedName.charAt(0).toUpperCase() + parsedName.slice(1));
     
     setIsModalOpen(true);

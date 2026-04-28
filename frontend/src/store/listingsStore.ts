@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Listing } from '@renthub/shared';
+import { Listing } from '@renthob/shared';
 
 interface ListingsState {
   listings: Listing[];

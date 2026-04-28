@@ -1,6 +1,81 @@
-import { Listing } from "@renthub/shared";
+import { Listing } from "@renthob/shared";
 import { ListingCard } from "./ListingCard";
 import { Skeleton } from "../ui";
+
+export const DEMO_LISTINGS: Listing[] = [
+  {
+    id: "demo-1",
+    title: "Luxury 3 Bedroom Apartment",
+    description: "Beautiful apartment in the heart of the city.",
+    type: "apartment",
+    listingPurpose: "rent",
+    rentFrequency: "yearly",
+    price: 3500000,
+    address: "Admiralty Way",
+    city: "Lekki Phase 1",
+    state: "Lagos",
+    bedrooms: 3,
+    bathrooms: 3,
+    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800"],
+    amenities: ["Swimming Pool", "24/7 Security"],
+    electricityBand: "A",
+    waterSituation: "running",
+    parkingSituation: "compound",
+    verified: true,
+    source: "renthob",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    landlordId: "demo-landlord"
+  } as unknown as Listing,
+  {
+    id: "demo-2",
+    title: "Spacious 4 Bedroom Duplex",
+    description: "Modern duplex with a large compound.",
+    type: "duplex",
+    listingPurpose: "sale",
+    price: 150000000,
+    salePrice: 150000000,
+    address: "Gowon Estate",
+    city: "Egbeda",
+    state: "Lagos",
+    bedrooms: 4,
+    bathrooms: 5,
+    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800"],
+    amenities: ["Ample Parking", "Gated Estate"],
+    electricityBand: "B",
+    waterSituation: "running",
+    parkingSituation: "compound",
+    verified: true,
+    source: "renthob",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    landlordId: "demo-landlord"
+  } as unknown as Listing,
+  {
+    id: "demo-3",
+    title: "Cozy 1 Bedroom Shortlet",
+    description: "Fully furnished shortlet for your weekend getaway.",
+    type: "apartment",
+    listingPurpose: "shortlet",
+    price: 80000,
+    shortletPricing: { daily: 80000, weekly: 500000, monthly: 1800000 },
+    address: "Sinari Daranijo",
+    city: "Victoria Island",
+    state: "Lagos",
+    bedrooms: 1,
+    bathrooms: 1,
+    images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800"],
+    amenities: ["WiFi", "Smart TV", "Cleaning Service"],
+    electricityBand: "A",
+    waterSituation: "running",
+    parkingSituation: "compound",
+    verified: true,
+    source: "renthob",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    landlordId: "demo-landlord"
+  } as unknown as Listing
+];
 
 interface ListingGridProps {
   listings?: Listing[];
@@ -26,21 +101,20 @@ export const ListingGrid = ({ listings, isLoading }: ListingGridProps) => {
     );
   }
 
-  if (!listings || listings.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 text-6xl">🏠</div>
-        <h3 className="text-xl font-bold text-neutral-900">No properties found</h3>
-        <p className="text-neutral-500">Try adjusting your filters to find more properties.</p>
-      </div>
-    );
-  }
+  const displayListings = (!listings || listings.length === 0) ? DEMO_LISTINGS : listings;
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {listings.map((listing) => (
-        <ListingCard key={listing.id} listing={listing} />
-      ))}
+    <div className="space-y-6">
+      {(!listings || listings.length === 0) && (
+        <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium">
+          <span>🌟 Showing demo properties while we fetch real listings for you.</span>
+        </div>
+      )}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {displayListings.map((listing) => (
+          <ListingCard key={listing.id} listing={listing} />
+        ))}
+      </div>
     </div>
   );
 };

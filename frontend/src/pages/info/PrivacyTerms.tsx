@@ -85,7 +85,7 @@ export const PrivacyTerms = () => {
                   </div>
                   <div className="prose prose-neutral max-w-none text-neutral-600 leading-relaxed text-lg space-y-6">
                     <p>
-                      Welcome to <span className="text-ink font-bold">RentHub Nigeria</span>. By accessing our platform (via website or app), you agree to comply with and be bound by the following terms and conditions. These terms govern our relationship with you in relation to this platform.
+                      Welcome to <span className="text-ink font-bold">RentHob Nigeria</span>. By accessing our platform (via website or app), you agree to comply with and be bound by the following terms and conditions. These terms govern our relationship with you in relation to this platform.
                     </p>
                     <p>
                       Our mission is to provide a seamless, transparent, and luxury-grade property experience for all Nigerians. These terms ensure that all participants—renters, buyers, agents, and landlords—interact within a framework of mutual respect and legal clarity.
@@ -133,7 +133,7 @@ export const PrivacyTerms = () => {
                   </div>
                   <div className="text-neutral-600 leading-relaxed text-lg space-y-6">
                     <p>
-                      While RentHub strives to verify all listings manually through our rigorous 4-step process, we cannot guarantee 100% accuracy of all details provided by third-party agents or external sources like Jiji.ng.
+                      While RentHob strives to verify all listings manually through our rigorous 4-step process, we cannot guarantee 100% accuracy of all details provided by third-party agents or external sources like Jiji.ng.
                     </p>
                     <div className="mt-8 bg-ink text-white p-8 md:p-10 rounded-[2rem] relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:scale-150" />
@@ -158,7 +158,7 @@ export const PrivacyTerms = () => {
                   </div>
                   <div className="text-neutral-600 leading-relaxed text-lg">
                     <p>
-                      RentHub provides a marketplace. Any payments for rent, sales, or commissions are handled directly between the buyer/tenant and the landlord/agent. RentHub does not currently process escrow payments through its primary marketplace.
+                      RentHob provides a marketplace. Any payments for rent, sales, or commissions are handled directly between the buyer/tenant and the landlord/agent. RentHob does not currently process escrow payments through its primary marketplace.
                     </p>
                   </div>
                 </div>
@@ -190,7 +190,7 @@ export const PrivacyTerms = () => {
                   </div>
                   <div className="text-neutral-600 leading-relaxed text-lg">
                     <p>
-                      RentHub Nigeria, its directors, and employees shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use or inability to use the platform, including any disputes with agents or landlords.
+                      RentHob Nigeria, its directors, and employees shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use or inability to use the platform, including any disputes with agents or landlords.
                     </p>
                   </div>
                 </div>

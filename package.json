@@ -1,7 +1,7 @@
 {
-  "name": "renthub-monorepo",
+  "name": "renthob-monorepo",
   "version": "1.0.0",
-  "description": "RentHub Full-Stack Project Architecture",
+  "description": "RentHob Full-Stack Project Architecture",
   "private": true,
   "workspaces": [
     "frontend",

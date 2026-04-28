@@ -54,7 +54,7 @@ export const VerificationInfo = () => {
               transition={{ delay: 0.1 }}
               className="text-xl text-neutral-600 leading-relaxed max-w-2xl mx-auto font-medium"
             >
-              In Nigeria's chaotic real estate market, RentHub stands out as the beacon of trust. We go where others won't, verifying listings at the source.
+              In Nigeria's chaotic real estate market, RentHob stands out as the beacon of trust. We go where others won't, verifying listings at the source.
             </motion.p>
           </div>
         </section>
@@ -93,7 +93,7 @@ export const VerificationInfo = () => {
                   num="02"
                   icon={<Camera className="h-6 w-6" />}
                   title="On-Site Inspection"
-                  description="A RentHub representative physically visits the site to ensure photos are 100% current."
+                  description="A RentHob representative physically visits the site to ensure photos are 100% current."
                   variants={itemVariants}
                 />
                 <StepCard 
@@ -132,16 +132,16 @@ export const VerificationInfo = () => {
                     <h3 className="text-3xl md:text-4xl font-bold font-clash text-ink mb-6">A Note on External Listings</h3>
                     <div className="space-y-6 text-neutral-600 text-lg leading-relaxed max-w-3xl">
                       <p>
-                        RentHub automatically syncs thousands of properties from verified external sources like <span className="text-ink font-bold underline decoration-primary/30">Jiji.ng</span> to ensure you have the widest variety of choices. 
+                        RentHob automatically syncs thousands of properties from verified external sources like <span className="text-ink font-bold underline decoration-primary/30">Jiji.ng</span> to ensure you have the widest variety of choices. 
                       </p>
                       <p className="font-bold text-ink p-6 bg-sand/50 rounded-2xl border-l-4 border-primary">
-                        Important: Listings labeled "via Jiji.ng" have NOT undergone our full 4-step on-site verification unless they ALSO carry the purple RentHub badge.
+                        Important: Listings labeled "via Jiji.ng" have NOT undergone our full 4-step on-site verification unless they ALSO carry the purple RentHob badge.
                       </p>
                     </div>
                     
                     <div className="flex flex-wrap gap-6 mt-10">
                        <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-primary/5 border border-primary/20 text-sm font-bold text-primary">
-                          <CheckCircle className="h-5 w-5" /> RentHub Badge = Guaranteed Safe
+                          <CheckCircle className="h-5 w-5" /> RentHob Badge = Guaranteed Safe
                        </div>
                        <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-neutral-50 border border-neutral-200 text-sm font-bold text-neutral-500">
                           <ShieldAlert className="h-5 w-5" /> No Badge = Use caution & inspect
@@ -173,7 +173,7 @@ export const VerificationInfo = () => {
                  />
                  <SafetyCard 
                    num="3"
-                   title="Chat through RentHub"
+                   title="Chat through RentHob"
                    description="Keep your conversations on the platform so we can assist you if any disputes arise. Use our verified WhatsApp links."
                  />
               </div>

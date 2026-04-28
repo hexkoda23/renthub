@@ -46,7 +46,7 @@ export class EnquiriesService {
       // If landlordId matches our mock patterns
       if (enquiry.landlordId.includes("mock-") || enquiry.landlordId.includes("owner-") || enquiry.landlordId.includes("agent-")) {
           // Send to a test email or the sender email if testing
-          landlordEmail = "landlord-test@renthub.local";
+          landlordEmail = "landlord-test@renthob.local";
       } else {
           const userDoc = await this.usersCollection.doc(enquiry.landlordId).get();
           if (userDoc.exists) {
@@ -64,13 +64,13 @@ export class EnquiriesService {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          from: "RentHub Enquiries <onboarding@resend.dev>", 
-          to: landlordEmail.includes("renthub.local") ? "delivered@resend.dev" : landlordEmail,
+          from: "RentHob Enquiries <onboarding@resend.dev>",
+          to: landlordEmail.includes("renthob.local") ? "delivered@resend.dev" : landlordEmail,
           subject: `New Prospect for property: ${enquiry.listingId.slice(-6)}`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; rounded: 12px;">
               <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #6366f1; margin: 0;">RentHub</h1>
+                <h1 style="color: #6366f1; margin: 0;">RentHob</h1>
                 <p style="color: #666; font-size: 14px;">Elevating Nigerian Real Estate</p>
               </div>
               

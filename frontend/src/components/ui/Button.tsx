@@ -8,16 +8,16 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-full text-sm font-display font-semibold tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center rounded-xl text-sm font-display font-semibold tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 active:scale-95",
   {
     variants: {
       variant: {
-        primary: "bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/30 shadow-sm",
+        primary: "bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/30 shadow-sm shadow-primary/20",
         secondary: "bg-ink text-white hover:bg-ink-soft shadow-sm",
-        outline: "border border-neutral-200 bg-transparent hover:border-primary hover:text-primary text-neutral-700",
-        ghost: "hover:bg-neutral-100 text-neutral-600",
-        danger: "bg-red-500 text-white hover:bg-red-600",
-        dark: "bg-ink text-white hover:bg-ink-soft",
+        outline: "border border-neutral-200 bg-transparent hover:border-primary hover:text-primary text-neutral-700 rounded-xl",
+        ghost: "hover:bg-neutral-100 text-neutral-600 rounded-xl",
+        danger: "bg-red-500 text-white hover:bg-red-600 rounded-xl",
+        dark: "bg-ink text-white hover:bg-ink-soft rounded-xl",
       },
       size: {
         sm: "h-9 px-4",

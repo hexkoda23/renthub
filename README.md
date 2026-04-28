@@ -1,6 +1,6 @@
-# RentHub – Find Your Perfect Home in Nigeria
+# RentHob – Find Your Perfect Home in Nigeria
 
-RentHub is a modern, AI-powered real estate platform dedicated to the Nigerian market. It helps users discover verified listings and uses an AI Neighbourhood Advisor to recommend the best areas based on budget, lifestyle, and safety.
+RentHob is a modern, AI-powered real estate platform dedicated to the Nigerian market. It helps users discover verified listings and uses an AI Neighbourhood Advisor to recommend the best areas based on budget, lifestyle, and safety.
 
 ## 🚀 Key Features
 - **Verified Property Listings**: Detailed listings with location, price, and amenities.
@@ -28,7 +28,7 @@ RentHub is a modern, AI-powered real estate platform dedicated to the Nigerian m
 ### 1. Clone & Install
 ```bash
 git clone <repo-url>
-cd RENTHUB-1
+cd RentHob
 npm install
 ```
 
