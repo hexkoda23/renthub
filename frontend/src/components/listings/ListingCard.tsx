@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Listing, ELECTRICITY_BANDS } from "@renthob/shared";
-import { Card, Badge } from "../ui";
+import { Card } from "../ui";
 import { BedDouble, Bath, MapPin, Zap, Droplets } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PriceTag } from "./PriceTag";

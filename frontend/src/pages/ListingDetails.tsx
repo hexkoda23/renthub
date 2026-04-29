@@ -130,8 +130,8 @@ export const ListingDetails = () => {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  if (isLoading && !demoListing) return <LoadingSkeleton />;
-  if ((error || !listing) && !demoListing) return <ErrorState />;
+  if (isLoading && !listing) return <LoadingSkeleton />;
+  if (error || !listing) return <ErrorState />;
 
   const elecInfo = ELECTRICITY_BANDS.find((b: any) => b.value === listing.electricityBand);
   const waterInfo = WATER_OPTIONS.find((w: any) => w.value === listing.waterSituation);
@@ -156,7 +156,7 @@ export const ListingDetails = () => {
             Back to listings
           </Link>
           <div className="flex gap-3">
-            {!listing.source || listing.source === "renthob" || listing.source === "handover" ? (
+            {!listing.source || (listing.source as string) === "renthob" || (listing.source as string) === "renthub" || listing.source === "handover" ? (
               <>
                 <Button variant="outline" size="sm" className="gap-2 rounded-full border-clay/10 bg-white hover:bg-clay hover:text-white transition-all">
                   <Share2 className="h-4 w-4" /> Share

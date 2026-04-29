@@ -1,7 +1,7 @@
 import { RegisterForm } from '../../components/auth/RegisterForm';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowLeft, ShieldCheck, Home, CheckCircle, Zap, MessageSquare } from 'lucide-react';
+import { Sparkles, ArrowLeft, Home, CheckCircle, Zap, MessageSquare } from 'lucide-react';
 
 export const Register: React.FC = () => {
   return (

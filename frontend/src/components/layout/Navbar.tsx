@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "../ui";
 import { useAuth } from "../../hooks/useAuth";
-import { User, LogOut, Menu, X, Sparkles, Home } from "lucide-react";
+import { LogOut, Menu, X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const Navbar = () => {

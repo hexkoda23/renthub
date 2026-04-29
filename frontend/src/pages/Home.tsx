@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { SearchBar } from "../components/shared/SearchBar";
 import { ListingGrid } from "../components/listings/ListingGrid";
 import { Button, Badge } from "../components/ui";
-import { Shield, Zap, MessageSquare, ArrowRight, Star, Users, Home as HomeIcon, CheckCircle, Zap as ZapIcon, MapPin } from "lucide-react";
+import { Shield, MessageSquare, ArrowRight, CheckCircle, Zap as ZapIcon, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listingsService } from "../services/listings.service";
 import { cn } from "../utils/cn";
