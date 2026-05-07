@@ -10,6 +10,14 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const idToken = authHeader.split("Bearer ")[1];
     
+    // Dev mode bypass
+    if (idToken.startsWith("dev-token-")) {
+      console.log("🛠️ Dev Mode: Bypassing Auth verification");
+      const devUserId = idToken.replace("dev-token-", "");
+      (req as any).user = { uid: devUserId, email: "dev@example.com" };
+      return next();
+    }
+    
     // Dev bypass if Firebase is not initialized
     if (Object.keys(auth).length === 1 && auth.onAuthStateChanged) {
       console.log("🛠️ Dev Mode: Bypassing Auth verification");

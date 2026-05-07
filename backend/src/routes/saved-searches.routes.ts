@@ -33,6 +33,7 @@ router.get("/", async (req, res) => {
     const searches = await SavedSearchesService.getUserSearches(userId);
     res.json({ success: true, data: searches });
   } catch (error: any) {
+    console.error("Saved searches error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });

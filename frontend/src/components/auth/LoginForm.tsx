@@ -3,6 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button, Input } from "../ui";
 import { loginWithEmail, signInWithGoogle } from "../../services/firebase/auth";
+import { useAuthStore } from "../../store/authStore";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
 const loginSchema = z.object({
@@ -16,16 +19,33 @@ export const LoginForm = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
+  const { setUser } = useAuthStore();
+  const navigate = useNavigate();
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await loginWithEmail(data.email, data.password);
+      toast.success("Logged in successfully!");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error(error);
-      if (error.message.includes("apiKey")) {
+      if (error.message.includes("apiKey") || error.message.includes("configuration-not-found")) {
         console.log("🛠️ Dev Mode: Simulating successful login");
+        setUser({
+          uid: "dev-user-123",
+          id: "dev-user-123",
+          email: data.email,
+          displayName: data.email.split('@')[0],
+          role: "renter",
+          phone: "",
+          state: "",
+          verified: false,
+          createdAt: new Date().toISOString(),
+        });
+        toast.success("Dev Login Successful!");
+        navigate("/dashboard");
       } else {
-        alert(error.message || "Login failed");
+        toast.error(error.message || "Login failed");
       }
     }
   };
@@ -52,6 +72,7 @@ export const LoginForm = () => {
           placeholder="••••••••"
           error={errors.password?.message}
           {...register("password")}
+          isPasswordToggle={true}
           className="bg-sand/50 border-neutral-200 focus:bg-white transition-all duration-300"
         />
       </div>

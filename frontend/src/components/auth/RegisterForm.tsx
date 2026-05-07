@@ -1,38 +1,63 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Input, Button } from "../ui";
 import { registerWithEmail, signInWithGoogle } from "../../services/firebase/auth";
+import { db } from "../../services/firebase/config";
+import { doc, setDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Confirm password must be at least 6 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
+
 export const RegisterForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
   });
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
+  const onSubmit = async (data: RegisterFormValues) => {
     try {
-      await registerWithEmail(formData.email, formData.password);
+      const userCredential = await registerWithEmail(data.email, data.password);
+      
+      await updateProfile(userCredential.user, {
+        displayName: data.name
+      });
+      
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        displayName: data.name,
+        email: data.email,
+        role: "renter",
+        phone: "",
+        state: "",
+        verified: false,
+        createdAt: new Date().toISOString(),
+      });
+      
       toast.success("Account created successfully!");
       navigate("/login");
     } catch (error: any) {
       console.error(error);
-      if (error.message.includes("apiKey")) {
+      if (error.message.includes("apiKey") || error.message.includes("configuration-not-found")) {
         console.log("🛠️ Dev Mode: Simulating successful registration");
         toast.success("Dev Account Created (Mock)");
         navigate("/login");
       } else {
         toast.error(error.message || "Registration failed");
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -40,7 +65,7 @@ export const RegisterForm = () => {
     <motion.form 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      onSubmit={handleSubmit} 
+      onSubmit={handleSubmit(onSubmit)} 
       className="space-y-5"
     >
       <div className="space-y-4">
@@ -48,28 +73,34 @@ export const RegisterForm = () => {
           label="Full Name"
           type="text"
           placeholder="John Doe"
-          required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          error={errors.name?.message}
+          {...register("name")}
           className="bg-sand/50 border-neutral-200 focus:bg-white transition-all duration-300"
         />
         <Input
           label="Email Address"
           type="email"
           placeholder="you@example.com"
-          required
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          error={errors.email?.message}
+          {...register("email")}
           className="bg-sand/50 border-neutral-200 focus:bg-white transition-all duration-300"
         />
         <Input
           label="Password"
           type="password"
           placeholder="••••••••"
-          required
-          minLength={6}
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          error={errors.password?.message}
+          {...register("password")}
+          isPasswordToggle={true}
+          className="bg-sand/50 border-neutral-200 focus:bg-white transition-all duration-300"
+        />
+        <Input
+          label="Confirm Password"
+          type="password"
+          placeholder="••••••••"
+          error={errors.confirmPassword?.message}
+          {...register("confirmPassword")}
+          isPasswordToggle={true}
           className="bg-sand/50 border-neutral-200 focus:bg-white transition-all duration-300"
         />
       </div>
@@ -77,7 +108,7 @@ export const RegisterForm = () => {
       <Button 
         type="submit" 
         className="w-full bg-ink text-white hover:bg-neutral-800 h-12 rounded-xl text-sm font-bold shadow-lg shadow-ink/10 transition-all active:scale-[0.98]" 
-        isLoading={isLoading}
+        isLoading={isSubmitting}
       >
         Create Account
       </Button>
