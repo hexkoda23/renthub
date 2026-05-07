@@ -1,10 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 35% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 35% 12%;
+    --primary: 202 91% 34%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 203 55% 96%;
+    --secondary-foreground: 224 35% 12%;
+    --accent: 174 73% 92%;
+    --accent-foreground: 184 72% 20%;
+    --muted: 210 28% 96%;
+    --muted-foreground: 220 9% 46%;
+    --border: 214 22% 90%;
+    --input: 214 22% 90%;
+    --ring: 202 91% 34%;
+  }
+
   * {
     box-sizing: border-box;
+    border-color: hsl(var(--border));
   }
 
   html {
@@ -12,55 +33,174 @@
   }
 
   body {
-    font-family: 'Inter', sans-serif;
-    background: #FAFAFA;
-    color: #171717;
+    margin: 0;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
   }
 
   ::selection {
-    background: #6C63FF;
-    color: white;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .gradient-hero {
+    background:
+      radial-gradient(circle at 50% 0%, hsl(var(--accent) / 0.85), transparent 34rem),
+      linear-gradient(180deg, hsl(var(--secondary) / 0.7), hsl(var(--background)));
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, #0f87ba 0%, #096d9b 52%, #0b4f73 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #0f87ba, #00a99d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
   }
 }
 
 @layer utilities {
-  /* Custom Scrollbar */
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+
+  .bg-card {
+    background-color: hsl(var(--card));
+  }
+
+  .bg-primary {
+    background-color: hsl(var(--primary));
+  }
+
+  .bg-secondary {
+    background-color: hsl(var(--secondary));
+  }
+
+  .bg-accent {
+    background-color: hsl(var(--accent));
+  }
+
+  .bg-renthob-blue-50 {
+    background-color: #eff9ff;
+  }
+
+  .text-foreground {
+    color: hsl(var(--foreground));
+  }
+
+  .text-card-foreground {
+    color: hsl(var(--card-foreground));
+  }
+
+  .text-primary {
+    color: hsl(var(--primary));
+  }
+
+  .text-primary-foreground {
+    color: hsl(var(--primary-foreground));
+  }
+
+  .text-secondary-foreground {
+    color: hsl(var(--secondary-foreground));
+  }
+
+  .text-accent-foreground {
+    color: hsl(var(--accent-foreground));
+  }
+
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .text-border {
+    color: hsl(var(--border));
+  }
+
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+
+  .border-input {
+    border-color: hsl(var(--input));
+  }
+
+  .ring-ring {
+    --tw-ring-color: hsl(var(--ring));
+  }
+
+  .ring-offset-background {
+    --tw-ring-offset-color: hsl(var(--background));
+  }
+
+  .shadow-card {
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 8px 24px rgba(15, 135, 186, 0.08);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 16px 48px rgba(15, 135, 186, 0.16);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.55s ease-out both;
+  }
+
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #F5F5F5;
+    background: #f4f7f9;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #6C63FF;
+    background: #0f87ba;
     border-radius: 999px;
   }
 
-  /* Page transitions */
-  .page-transition {
-    animation: fadeUp 0.5s ease-out forwards;
-  }
-
-  /* Remove old font-sora references — these classes now use font-display */
   .font-sora {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
   }
 }
 
-@keyframes fadeUp {
-  0% {
+@keyframes fadeIn {
+  from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(10px);
   }
-  100% {
+
+  to {
     opacity: 1;
     transform: translateY(0);
   }

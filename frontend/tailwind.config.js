@@ -4,20 +4,39 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: "hsl(var(--background) / <alpha-value>)",
+        foreground: "hsl(var(--foreground) / <alpha-value>)",
+        card: {
+          DEFAULT: "hsl(var(--card) / <alpha-value>)",
+          foreground: "hsl(var(--card-foreground) / <alpha-value>)",
+        },
+        border: "hsl(var(--border) / <alpha-value>)",
+        input: "hsl(var(--input) / <alpha-value>)",
+        ring: "hsl(var(--ring) / <alpha-value>)",
+        muted: {
+          DEFAULT: "hsl(var(--muted) / <alpha-value>)",
+          foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
+          foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",
+        },
         primary: {
-          DEFAULT: "#6C63FF",
-          light: "#EEF0FF",
-          dark: "#5148E8",
-          50: "#F5F4FF",
-          100: "#EEF0FF",
-          200: "#D9D6FF",
-          600: "#6C63FF",
-          700: "#5148E8",
+          DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+          foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
+          light: "#E6F6FD",
+          dark: "#096D9B",
+          50: "#EFF9FF",
+          100: "#DDF2FC",
+          200: "#BCE5F8",
+          600: "#0F87BA",
+          700: "#096D9B",
         },
         accent: {
-          DEFAULT: "#FF6B6B",
-          light: "#FFF0F0",
-          dark: "#E55555",
+          DEFAULT: "hsl(var(--accent) / <alpha-value>)",
+          foreground: "hsl(var(--accent-foreground) / <alpha-value>)",
+          light: "#E8FAF8",
+          dark: "#00A99D",
         },
         gold: {
           DEFAULT: "#F59E0B",

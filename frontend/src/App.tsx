@@ -2,8 +2,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Home } from "./pages/Home";
-import { Listings } from "./pages/Listings";
-import { ListingDetails } from "./pages/ListingDetails";
+import { RenthobSearch } from "./pages/RenthobSearch";
+import { RenthobPropertyDetails } from "./pages/RenthobPropertyDetails";
+import { ListProperty } from "./pages/ListProperty";
+import { JoinAgent } from "./pages/JoinAgent";
 import { AIAdvisor } from "./pages/AIAdvisor";
 import { Login } from "./pages/auth/Login";
 import { Register } from "./pages/auth/Register";
@@ -27,11 +29,16 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/listings" element={<Listings />} />
-          <Route path="/listings/:id" element={<ListingDetails />} />
+          <Route path="/search" element={<RenthobSearch />} />
+          <Route path="/listings" element={<RenthobSearch />} />
+          <Route path="/property/:id" element={<RenthobPropertyDetails />} />
+          <Route path="/listings/:id" element={<RenthobPropertyDetails />} />
+          <Route path="/list-property" element={<ListProperty />} />
+          <Route path="/join-agent" element={<JoinAgent />} />
           <Route path="/ai-advisor" element={<AIAdvisor />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/signup" element={<Register />} />
           
           <Route path="/handover" element={<HandoverFlow />} />
           

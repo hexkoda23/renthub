@@ -1,142 +1,90 @@
-import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Button } from "../ui";
-import { useAuth } from "../../hooks/useAuth";
-import { LogOut, Menu, X, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+
+const navLinks = [
+  { to: "/search", label: "Browse Properties" },
+  { to: "/help", label: "How It Works" },
+  { to: "/verification", label: "Features" },
+  { to: "/help", label: "FAQs" },
+];
 
 export const Navbar = () => {
-  const { user, isAuthenticated, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/listings?purpose=rent", label: "Rent" },
-    { to: "/listings?purpose=sale", label: "Buy" },
-    { to: "/listings?purpose=shortlet", label: "Shortlet" },
-    { to: "/ai-advisor", label: "AI Advisor", highlight: true },
-  ];
 
   return (
-    <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-      scrolled 
-        ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-neutral-100" 
-        : "bg-white/70 backdrop-blur-md"
-    }`}>
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center group">
-          <img src="/logo.jpg" alt="RentHob Logo" className="h-10 w-auto object-contain rounded-lg" />
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        <Link to="/" className="flex items-center" aria-label="Renthob home">
+          <img src="/logo.png" alt="Renthob" className="h-10" />
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1">
+        <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
+            <Link
+              key={link.label}
               to={link.to}
-              className={({ isActive }) =>
-                `relative px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
-                  link.highlight
-                    ? isActive
-                      ? "text-primary bg-primary-light"
-                      : "text-primary hover:bg-primary-light"
-                    : isActive
-                    ? "text-primary bg-primary-light"
-                    : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
-                }`}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              {link.highlight && <Sparkles className="inline h-3.5 w-3.5 mr-1.5 opacity-70" />}
               {link.label}
-            </NavLink>
+            </Link>
           ))}
+        </nav>
+
+        <div className="hidden items-center gap-3 md:flex">
+          <Link
+            to="/login"
+            className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            Log In
+          </Link>
+          <Link
+            to="/signup"
+            className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Get Started
+          </Link>
         </div>
 
-        {/* Auth Buttons */}
-        <div className="flex items-center gap-2">
-          {isAuthenticated ? (
-            <>
-              <Link to="/dashboard">
-                <Button size="sm" variant="ghost" className="gap-2 font-medium">
-                  <div className="h-6 w-6 rounded-full bg-primary-light flex items-center justify-center">
-                    <span className="text-xs font-bold text-primary">
-                      {(user?.displayName || "U")[0].toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="hidden sm:inline">{(user?.displayName || "User").split(" ")[0]}</span>
-                </Button>
-              </Link>
-              <Button size="sm" variant="outline" onClick={signOut} className="gap-2 border-neutral-200 hidden sm:flex">
-                <LogOut className="h-3.5 w-3.5" /> Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button size="sm" variant="ghost" className="hidden sm:flex font-medium text-neutral-600">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/register">
-                <Button size="sm" className="bg-primary hover:bg-primary-dark text-white rounded-xl shadow-sm shadow-primary/30 font-semibold px-5">
-                  Get Started
-                </Button>
-              </Link>
-            </>
-          )}
-          <button
-            className="md:hidden p-2 text-neutral-600 hover:bg-neutral-100 rounded-xl transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
+        <button
+          className="p-2 text-muted-foreground hover:text-foreground md:hidden"
+          aria-label="Toggle menu"
+          onClick={() => setIsOpen((value) => !value)}
+        >
+          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden overflow-hidden border-t border-neutral-100 bg-white"
-          >
-            <div className="flex flex-col gap-1 p-4">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setIsOpen(false)}
-                  className={({ isActive }) =>
-                    `px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
-                      isActive ? "text-primary bg-primary-light" : "text-neutral-600 hover:bg-neutral-50"
-                    }`}
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-              {!isAuthenticated && (
-                <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-neutral-100">
-                  <Link to="/login" onClick={() => setIsOpen(false)}>
-                    <Button variant="outline" className="w-full">Sign In</Button>
-                  </Link>
-                  <Link to="/register" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-primary text-white">Get Started</Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+      {isOpen ? (
+        <div className="border-t border-border bg-background px-4 py-3 md:hidden">
+          <div className="grid gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.to}
+                onClick={() => setIsOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+            >
+              Log In
+            </Link>
+            <Link
+              to="/signup"
+              onClick={() => setIsOpen(false)}
+              className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      ) : null}
+    </header>
   );
 };
