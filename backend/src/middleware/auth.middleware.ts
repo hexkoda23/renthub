@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { auth } from "../config/firebase";
+import { env } from "../config/env";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -9,7 +10,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
 
     const idToken = authHeader.split("Bearer ")[1];
-    
+
     // Dev mode bypass
     if (idToken.startsWith("dev-token-")) {
       console.log("🛠️ Dev Mode: Bypassing Auth verification");
@@ -17,9 +18,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       (req as any).user = { uid: devUserId, email: "dev@example.com" };
       return next();
     }
-    
-    // Dev bypass if Firebase is not initialized
-    if (Object.keys(auth).length === 1 && auth.onAuthStateChanged) {
+
+    // Dev bypass if Firebase Admin is not initialized
+    if (env.NODE_ENV === "development" && typeof auth.verifyIdToken !== "function") {
       console.log("🛠️ Dev Mode: Bypassing Auth verification");
       (req as any).user = { uid: "dev-user-123", email: "dev@example.com" };
       return next();

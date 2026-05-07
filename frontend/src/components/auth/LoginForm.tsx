@@ -26,7 +26,7 @@ export const LoginForm = () => {
     try {
       await loginWithEmail(data.email, data.password);
       toast.success("Logged in successfully!");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       console.error(error);
       if (error.message.includes("apiKey") || error.message.includes("configuration-not-found")) {
@@ -43,7 +43,7 @@ export const LoginForm = () => {
           createdAt: new Date().toISOString(),
         });
         toast.success("Dev Login Successful!");
-        navigate("/dashboard");
+        navigate("/");
       } else {
         toast.error(error.message || "Login failed");
       }

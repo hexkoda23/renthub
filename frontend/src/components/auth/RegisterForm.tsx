@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,13 +47,13 @@ export const RegisterForm = () => {
       });
       
       toast.success("Account created successfully!");
-      navigate("/login");
+      navigate("/");
     } catch (error: any) {
       console.error(error);
       if (error.message.includes("apiKey") || error.message.includes("configuration-not-found")) {
         console.log("🛠️ Dev Mode: Simulating successful registration");
         toast.success("Dev Account Created (Mock)");
-        navigate("/login");
+        navigate("/");
       } else {
         toast.error(error.message || "Registration failed");
       }
