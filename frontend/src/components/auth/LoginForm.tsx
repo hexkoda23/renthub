@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Button, Input } from "../ui";
 import { loginWithEmail, signInWithGoogle } from "../../services/firebase/auth";
 import { useAuthStore } from "../../store/authStore";
+import { loginLocalAccount } from "../../services/localAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -15,8 +16,20 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+const isRecoverableFirebaseIssue = (error: any) =>
+  error.code === "auth/invalid-api-key" ||
+  error.code === "auth/configuration-not-found" ||
+  error.code === "auth/network-request-failed" ||
+  error.code === "auth/operation-not-allowed" ||
+  error.message?.includes("apiKey") ||
+  error.message?.includes("configuration-not-found");
+
 export const LoginForm = () => {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
   const { setUser } = useAuthStore();
@@ -26,35 +39,39 @@ export const LoginForm = () => {
     try {
       await loginWithEmail(data.email, data.password);
       toast.success("Logged in successfully!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error(error);
-      if (error.message.includes("apiKey") || error.message.includes("configuration-not-found")) {
-        console.log("🛠️ Dev Mode: Simulating successful login");
-        setUser({
-          uid: "dev-user-123",
-          id: "dev-user-123",
-          email: data.email,
-          displayName: data.email.split('@')[0],
-          role: "renter",
-          phone: "",
-          state: "",
-          verified: false,
-          createdAt: new Date().toISOString(),
-        });
-        toast.success("Dev Login Successful!");
-        navigate("/");
-      } else {
-        toast.error(error.message || "Login failed");
+
+      if (isRecoverableFirebaseIssue(error)) {
+        try {
+          const localUser = loginLocalAccount(data.email, data.password);
+          setUser({ ...localUser, id: localUser.uid });
+          toast.success("Logged in successfully!");
+          navigate("/dashboard");
+        } catch (localError: any) {
+          toast.error(localError.message || "Login failed");
+        }
+        return;
       }
+
+      toast.error(error.message || "Login failed");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error: any) {
+      toast.error(error.message || "Google login failed");
     }
   };
 
   return (
-    <motion.form 
+    <motion.form
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      onSubmit={handleSubmit(onSubmit)} 
+      onSubmit={handleSubmit(onSubmit)}
       className="space-y-5"
     >
       <div className="space-y-4">
@@ -69,23 +86,23 @@ export const LoginForm = () => {
         <Input
           label="Password"
           type="password"
-          placeholder="••••••••"
+          placeholder="Password"
           error={errors.password?.message}
           {...register("password")}
           isPasswordToggle={true}
           className="bg-sand/50 border-neutral-200 focus:bg-white transition-all duration-300"
         />
       </div>
-      
+
       <div className="flex items-center justify-end">
         <button type="button" className="text-xs font-bold text-primary hover:underline transition-all">
           Forgot password?
         </button>
       </div>
 
-      <Button 
-        type="submit" 
-        className="w-full bg-ink text-white hover:bg-neutral-800 h-12 rounded-xl text-sm font-bold shadow-lg shadow-ink/10 transition-all active:scale-[0.98]" 
+      <Button
+        type="submit"
+        className="w-full bg-ink text-white hover:bg-neutral-800 h-12 rounded-xl text-sm font-bold shadow-lg shadow-ink/10 transition-all active:scale-[0.98]"
         isLoading={isSubmitting}
       >
         Sign In
@@ -100,11 +117,11 @@ export const LoginForm = () => {
         </div>
       </div>
 
-      <Button 
-        type="button" 
-        variant="outline" 
-        className="w-full border-neutral-200 hover:bg-sand/50 h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-3 transition-all active:scale-[0.98]" 
-        onClick={() => signInWithGoogle()}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full border-neutral-200 hover:bg-sand/50 h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+        onClick={handleGoogleLogin}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path

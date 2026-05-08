@@ -4,8 +4,8 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { to: "/search", label: "Browse Properties" },
+  { to: "/renthob-ai", label: "Renthob AI" },
   { to: "/help", label: "How It Works" },
-  { to: "/verification", label: "Features" },
   { to: "/help", label: "FAQs" },
 ];
 

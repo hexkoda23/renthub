@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
 import { subscribeToAuth, logout as firebaseLogout, signInWithGoogle } from "../services/firebase/auth";
+import { clearLocalSession, getLocalSession } from "../services/localAuth";
 import axios from "axios";
 
 export const useAuth = () => {
@@ -18,10 +19,22 @@ export const useAuth = () => {
           setUser(response.data.data);
         } catch (error) {
           console.error("Failed to sync user profile", error);
-          setUser(null);
+          setUser({
+            uid: firebaseUser.uid,
+            id: firebaseUser.uid,
+            email: firebaseUser.email || "",
+            displayName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "",
+            photoURL: firebaseUser.photoURL || undefined,
+            role: "renter",
+            phone: "",
+            state: "",
+            verified: false,
+            createdAt: new Date().toISOString(),
+          });
         }
       } else {
-        setUser(null);
+        const localUser = getLocalSession();
+        setUser(localUser ? { ...localUser, id: localUser.uid } : null);
       }
       setLoading(false);
     });
@@ -30,7 +43,12 @@ export const useAuth = () => {
   }, [setUser, setLoading]);
 
   const signOut = async () => {
-    await firebaseLogout();
+    try {
+      await firebaseLogout();
+    } catch (error) {
+      console.warn("Firebase sign out failed; clearing local session.", error);
+    }
+    clearLocalSession();
     clearAuth();
   };
 

@@ -36,6 +36,7 @@ function App() {
           <Route path="/list-property" element={<ListProperty />} />
           <Route path="/join-agent" element={<JoinAgent />} />
           <Route path="/ai-advisor" element={<AIAdvisor />} />
+          <Route path="/renthob-ai" element={<AIAdvisor />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/signup" element={<Register />} />

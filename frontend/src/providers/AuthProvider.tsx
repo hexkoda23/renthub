@@ -3,6 +3,7 @@ import { subscribeToAuth } from '../services/firebase/auth';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../services/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
+import { getLocalSession } from '../services/localAuth';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { setUser, setLoading, clearAuth } = useAuthStore();
@@ -58,7 +59,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         }
       } else {
-        clearAuth();
+        const localUser = getLocalSession();
+        if (localUser) {
+          setUser(localUser);
+        } else {
+          clearAuth();
+        }
       }
     });
 

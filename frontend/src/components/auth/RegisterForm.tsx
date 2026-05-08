@@ -9,62 +9,107 @@ import { doc, setDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useAuthStore } from "../../store/authStore";
+import { createLocalAccount } from "../../services/localAuth";
 
-const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Confirm password must be at least 6 characters"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Confirm password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+const isRecoverableFirebaseIssue = (error: any) =>
+  error.code === "auth/invalid-api-key" ||
+  error.code === "auth/configuration-not-found" ||
+  error.code === "auth/network-request-failed" ||
+  error.code === "auth/operation-not-allowed" ||
+  error.message?.includes("apiKey") ||
+  error.message?.includes("configuration-not-found");
+
 export const RegisterForm = () => {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
   const navigate = useNavigate();
+  const { setUser } = useAuthStore();
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
       const userCredential = await registerWithEmail(data.email, data.password);
-      
-      await updateProfile(userCredential.user, {
-        displayName: data.name
-      });
-      
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        displayName: data.name,
+
+      setUser({
+        uid: userCredential.user.uid,
+        id: userCredential.user.uid,
         email: data.email,
+        displayName: data.name,
+        photoURL: userCredential.user.photoURL || undefined,
         role: "renter",
         phone: "",
         state: "",
         verified: false,
         createdAt: new Date().toISOString(),
       });
-      
+
+      try {
+        await updateProfile(userCredential.user, {
+          displayName: data.name,
+        });
+
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          displayName: data.name,
+          email: data.email,
+          role: "renter",
+          phone: "",
+          state: "",
+          verified: false,
+          createdAt: new Date().toISOString(),
+        });
+      } catch (profileError) {
+        console.warn("Account created, but profile metadata could not be saved yet.", profileError);
+      }
+
       toast.success("Account created successfully!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error(error);
-      if (error.message.includes("apiKey") || error.message.includes("configuration-not-found")) {
-        console.log("🛠️ Dev Mode: Simulating successful registration");
-        toast.success("Dev Account Created (Mock)");
-        navigate("/");
-      } else {
-        toast.error(error.message || "Registration failed");
+
+      if (isRecoverableFirebaseIssue(error)) {
+        const localUser = createLocalAccount(data.name, data.email, data.password);
+        setUser({ ...localUser, id: localUser.uid });
+        toast.success("Account created successfully!");
+        navigate("/dashboard");
+        return;
       }
+
+      toast.error(error.message || "Registration failed");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error: any) {
+      toast.error(error.message || "Google login failed");
     }
   };
 
   return (
-    <motion.form 
+    <motion.form
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      onSubmit={handleSubmit(onSubmit)} 
+      onSubmit={handleSubmit(onSubmit)}
       className="space-y-5"
     >
       <div className="space-y-4">
@@ -87,7 +132,7 @@ export const RegisterForm = () => {
         <Input
           label="Password"
           type="password"
-          placeholder="••••••••"
+          placeholder="Password"
           error={errors.password?.message}
           {...register("password")}
           isPasswordToggle={true}
@@ -96,7 +141,7 @@ export const RegisterForm = () => {
         <Input
           label="Confirm Password"
           type="password"
-          placeholder="••••••••"
+          placeholder="Confirm password"
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
           isPasswordToggle={true}
@@ -104,9 +149,9 @@ export const RegisterForm = () => {
         />
       </div>
 
-      <Button 
-        type="submit" 
-        className="w-full bg-ink text-white hover:bg-neutral-800 h-12 rounded-xl text-sm font-bold shadow-lg shadow-ink/10 transition-all active:scale-[0.98]" 
+      <Button
+        type="submit"
+        className="w-full bg-ink text-white hover:bg-neutral-800 h-12 rounded-xl text-sm font-bold shadow-lg shadow-ink/10 transition-all active:scale-[0.98]"
         isLoading={isSubmitting}
       >
         Create Account
@@ -121,11 +166,11 @@ export const RegisterForm = () => {
         </div>
       </div>
 
-      <Button 
-        type="button" 
-        variant="outline" 
-        className="w-full border-neutral-200 hover:bg-sand/50 h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-3 transition-all active:scale-[0.98]" 
-        onClick={() => signInWithGoogle()}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full border-neutral-200 hover:bg-sand/50 h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+        onClick={handleGoogleLogin}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path
