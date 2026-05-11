@@ -3,21 +3,29 @@ import {
   Bot,
   Calculator,
   CheckCircle2,
+  ChevronLeft,
   Heart,
   Home,
   Map as MapIcon,
   MapPin,
   MessageSquare,
+  Mic,
+  Moon,
   Navigation,
+  Search,
   Shield,
   Sparkles,
+  Sun,
+  Users,
   Wallet,
+  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Navbar } from "../components/layout/Navbar";
 import { ChatWindow } from "../components/ai-advisor/ChatWindow";
 import { Button } from "../components/ui";
 import { cn } from "../utils/cn";
+import { Link } from "react-router-dom";
 
 type Neighborhood = {
   id: string;
@@ -124,7 +132,8 @@ const savedKey = "renthob-ai-saved-neighborhoods";
 const formatNaira = (value: number) => `NGN ${Math.round(value).toLocaleString()}`;
 
 export const AIAdvisor = () => {
-  const [activeView, setActiveView] = useState<"match" | "saved" | "map" | "calculator" | "chat">("match");
+  const [activeView, setActiveView] = useState<"match" | "saved" | "map" | "calculator">("match");
+  const [showChat, setShowChat] = useState(false);
   const [budget, setBudget] = useState(1200000);
   const [state, setState] = useState("Any");
   const [vibe, setVibe] = useState<Neighborhood["vibe"] | "any">("any");
@@ -133,6 +142,7 @@ export const AIAdvisor = () => {
   const [selectedId, setSelectedId] = useState(neighborhoods[0].id);
   const [rentAmount, setRentAmount] = useState(1000000);
   const [listedBy, setListedBy] = useState<"agent" | "landlord">("agent");
+  const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
     try {
@@ -173,331 +183,521 @@ export const AIAdvisor = () => {
     setSavedIds((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
   };
 
+  const budgetRanges = [
+    { label: "₦200k – ₦500k", min: 200000, max: 500000 },
+    { label: "₦500k – ₦1M", min: 500000, max: 1000000 },
+    { label: "₦1M – ₦3M", min: 1000000, max: 3000000 },
+    { label: "₦3M+", min: 3000000, max: 10000000 },
+  ];
+
+  const locations = ["Yaba", "Lekki", "Surulere", "Ikeja", "Abuja", "Gbagada", "Port Harcourt", "Ibadan", "Enugu", "Onitsha"];
+
+  const lifestyles = [
+    { label: "Quiet", emoji: "🤫" },
+    { label: "Social", emoji: "🎉" },
+    { label: "Work proximity", emoji: "💼" },
+    { label: "Affordable", emoji: "💰" },
+    { label: "Family-friendly", emoji: "👨‍👩‍👧‍👦" },
+    { label: "Safe & Secure", emoji: "🔒" },
+  ];
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
       <Navbar />
 
-      <main className="container py-6 md:py-8">
-        <section className="mb-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-card md:p-6">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Renthob AI
-            </div>
-            <h1 className="font-display text-3xl font-bold leading-tight text-foreground md:text-5xl">
-              Find the Nigerian neighborhood that fits your budget, lifestyle, and commute.
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-              Match by rent range, safety priority, lifestyle vibe, and work access. Save neighborhoods, compare them on
-              the map, then calculate exactly what you pay with Renthob's transparent pricing.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {[
-                ["match", "AI Match", Sparkles],
-                ["saved", "Saved", Heart],
-                ["map", "Map", MapIcon],
-                ["calculator", "Calculator", Calculator],
-                ["chat", "Ask AI", Bot],
-              ].map(([key, label, Icon]) => (
-                <Button
-                  key={key as string}
-                  type="button"
-                  variant={activeView === key ? "primary" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveView(key as typeof activeView)}
-                  className="gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label as string}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              ["45+", "Neighborhoods", MapPin],
-              ["0", "Hidden fees", CheckCircle2],
-              ["AI", "Local guidance", MessageSquare],
-            ].map(([value, label, Icon]) => (
-              <div key={label as string} className="rounded-2xl border border-border/60 bg-card p-4 shadow-card">
-                <Icon className="mb-3 h-5 w-5 text-primary" />
-                <p className="text-2xl font-bold text-foreground">{value as string}</p>
-                <p className="text-xs text-muted-foreground">{label as string}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {activeView === "match" ? (
-          <section className="grid gap-5 lg:grid-cols-[340px_1fr]">
-            <aside className="rounded-2xl border border-border/60 bg-card p-5 shadow-card">
-              <h2 className="mb-4 font-display text-xl font-bold">Your preferences</h2>
-              <div className="space-y-5">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold">Annual rent budget</span>
-                  <input
-                    type="range"
-                    min={200000}
-                    max={6000000}
-                    step={50000}
-                    value={budget}
-                    onChange={(event) => setBudget(Number(event.target.value))}
-                    className="w-full accent-primary"
-                  />
-                  <span className="text-sm font-bold text-primary">{formatNaira(budget)}</span>
-                </label>
-
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold">Preferred state</span>
-                  <select
-                    value={state}
-                    onChange={(event) => setState(event.target.value)}
-                    className="h-11 w-full rounded-xl border border-neutral-200 bg-background px-3 text-sm"
-                  >
-                    {["Any", "Lagos", "FCT", "Rivers", "Oyo"].map((option) => (
-                      <option key={option}>{option}</option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold">Lifestyle vibe</span>
-                  <select
-                    value={vibe}
-                    onChange={(event) => setVibe(event.target.value as Neighborhood["vibe"] | "any")}
-                    className="h-11 w-full rounded-xl border border-neutral-200 bg-background px-3 text-sm"
-                  >
-                    <option value="any">Any lifestyle</option>
-                    <option value="quiet">Quiet</option>
-                    <option value="family">Family</option>
-                    <option value="social">Social</option>
-                    <option value="work">Work access</option>
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold">Safety priority</span>
-                  <input
-                    type="range"
-                    min={1}
-                    max={5}
-                    value={safetyPriority}
-                    onChange={(event) => setSafetyPriority(Number(event.target.value))}
-                    className="w-full accent-primary"
-                  />
-                  <span className="text-sm font-bold text-primary">{safetyPriority}/5 minimum</span>
-                </label>
-              </div>
-            </aside>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              {rankedNeighborhoods.map(({ neighborhood, score }) => (
-                <NeighborhoodCard
-                  key={neighborhood.id}
-                  neighborhood={neighborhood}
-                  score={score}
-                  isSaved={savedIds.includes(neighborhood.id)}
-                  onSave={() => toggleSaved(neighborhood.id)}
-                  onMap={() => {
-                    setSelectedId(neighborhood.id);
-                    setActiveView("map");
-                  }}
-                  onCalculator={() => {
-                    setRentAmount(neighborhood.budget);
-                    setActiveView("calculator");
-                  }}
-                />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {activeView === "saved" ? (
-          <section className="rounded-2xl border border-border/60 bg-card p-5 shadow-card">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <div>
-                <h2 className="font-display text-2xl font-bold">Saved neighborhoods</h2>
-                <p className="text-sm text-muted-foreground">Keep your shortlist ready for comparison and map review.</p>
-              </div>
-              <Button variant="outline" size="sm" onClick={() => setActiveView("match")}>
-                Browse
-              </Button>
-            </div>
-            {savedNeighborhoods.length ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {savedNeighborhoods.map((neighborhood) => (
-                  <NeighborhoodCard
-                    key={neighborhood.id}
-                    neighborhood={neighborhood}
-                    score={95}
-                    isSaved={true}
-                    onSave={() => toggleSaved(neighborhood.id)}
-                    onMap={() => {
-                      setSelectedId(neighborhood.id);
-                      setActiveView("map");
-                    }}
-                    onCalculator={() => {
-                      setRentAmount(neighborhood.budget);
-                      setActiveView("calculator");
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed border-border p-10 text-center">
-                <Heart className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
-                <p className="font-semibold">No saved neighborhoods yet</p>
-                <p className="mt-1 text-sm text-muted-foreground">Tap the heart on any AI match to save it here.</p>
-              </div>
-            )}
-          </section>
-        ) : null}
-
-        {activeView === "map" ? (
-          <section className="grid gap-5 lg:grid-cols-[1fr_320px]">
-            <div className="relative min-h-[520px] overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-emerald-50 via-sky-50 to-amber-50 shadow-card">
-              <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(rgba(15,23,42,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:44px_44px]" />
-              {neighborhoods.map((neighborhood) => (
+      <main className="pt-6">
+        <header className="container mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {activeView !== "match" && (
                 <button
-                  key={neighborhood.id}
-                  type="button"
-                  onClick={() => setSelectedId(neighborhood.id)}
-                  className={cn(
-                    "absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold shadow-lg transition-all",
-                    selectedNeighborhood.id === neighborhood.id
-                      ? "border-primary bg-primary text-white"
-                      : "border-white/80 bg-white text-foreground hover:border-primary"
-                  )}
-                  style={{ left: `${neighborhood.x}%`, top: `${neighborhood.y}%` }}
+                  onClick={() => setActiveView("match")}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm hover:bg-slate-50"
                 >
-                  <MapPin className="h-4 w-4" />
-                  {neighborhood.name}
+                  <ChevronLeft className="h-5 w-5" />
                 </button>
-              ))}
-            </div>
-
-            <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-card">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">Map selection</p>
-              <h2 className="font-display text-2xl font-bold">{selectedNeighborhood.name}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {selectedNeighborhood.city}, {selectedNeighborhood.state}
-              </p>
-              <p className="mt-4 text-sm leading-6 text-muted-foreground">{selectedNeighborhood.summary}</p>
-              <div className="mt-4 space-y-3 text-sm">
-                <InfoRow icon={Shield} label="Safety" value={`${selectedNeighborhood.safety}/5`} />
-                <InfoRow icon={Wallet} label="Rent" value={selectedNeighborhood.rentRange} />
-                <InfoRow icon={Navigation} label="Commute" value={selectedNeighborhood.commute} />
-              </div>
-              <div className="mt-5 flex gap-2">
-                <Button className="flex-1 gap-2" onClick={() => toggleSaved(selectedNeighborhood.id)}>
-                  <Heart className="h-4 w-4" />
-                  {savedIds.includes(selectedNeighborhood.id) ? "Saved" : "Save"}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setRentAmount(selectedNeighborhood.budget);
-                    setActiveView("calculator");
-                  }}
-                >
-                  Cost
-                </Button>
-              </div>
-            </div>
-          </section>
-        ) : null}
-
-        {activeView === "calculator" ? (
-          <section className="mx-auto max-w-4xl rounded-2xl border border-border/60 bg-card p-5 shadow-card md:p-6">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white">
-                <Calculator className="h-6 w-6" />
-              </div>
-              <div>
-                <h2 className="font-display text-2xl font-bold">Rental Cost Calculator</h2>
-                <p className="text-sm text-muted-foreground">Transparent pricing with no inspection fee, legal fee, caution deposit, or total package.</p>
-              </div>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <div className="space-y-5">
-                <div>
-                  <p className="mb-2 text-sm font-semibold">Who listed the property?</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant={listedBy === "agent" ? "primary" : "outline"} onClick={() => setListedBy("agent")}>
-                      Agent Listed
-                    </Button>
-                    <Button
-                      variant={listedBy === "landlord" ? "primary" : "outline"}
-                      onClick={() => setListedBy("landlord")}
-                    >
-                      Landlord Listed
-                    </Button>
-                  </div>
+              )}
+              <div className="flex items-center gap-2">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500 text-white shadow-md">
+                  <MapPin className="h-7 w-7" />
                 </div>
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold">Annual rent amount</span>
-                  <input
-                    type="range"
-                    min={200000}
-                    max={10000000}
-                    step={50000}
-                    value={rentAmount}
-                    onChange={(event) => setRentAmount(Number(event.target.value))}
-                    className="w-full accent-primary"
-                  />
-                  <span className="text-3xl font-bold text-primary">{formatNaira(rentAmount)}</span>
+                <div>
+                  <h1 className="font-display text-2xl font-bold">Renthob AI</h1>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveView("saved")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors",
+                  activeView === "saved" ? "bg-blue-500 text-white" : "text-slate-600 hover:bg-white hover:text-slate-900"
+                )}
+              >
+                <Heart className="h-5 w-5" />
+                Saved
+              </button>
+              <button
+                onClick={() => setActiveView("map")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors",
+                  activeView === "map" ? "bg-blue-500 text-white" : "text-slate-600 hover:bg-white hover:text-slate-900"
+                )}
+              >
+                <MapIcon className="h-5 w-5" />
+                Map
+              </button>
+              <button
+                onClick={() => setActiveView("calculator")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors",
+                  activeView === "calculator" ? "bg-blue-500 text-white" : "text-slate-600 hover:bg-white hover:text-slate-900"
+                )}
+              >
+                <Calculator className="h-5 w-5" />
+                Calculator
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {activeView === "match" && (
+          <section className="container">
+            <div className="mx-auto max-w-4xl text-center mb-10">
+              <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
+                Find the right home for your <span className="text-blue-500">life</span> and income.
+              </h2>
+              <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+                Describe what you need or use the quick filters below. Our AI will find the best neighborhoods and available listings for you.
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-4xl mb-8">
+              <div className="relative bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+                <textarea
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="Describe what you need... e.g., 'I need a quiet 2-bedroom apartment in Lagos with good schools nearby, budget ₦1.5M per year'"
+                  className="w-full min-h-[100px] resize-none border-none outline-none text-slate-900 placeholder:text-slate-400"
+                />
+                <div className="flex items-center justify-end gap-3">
+                  <button className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100">
+                    <Mic className="h-5 w-5" />
+                  </button>
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white px-6 h-12 text-lg rounded-2xl">
+                    <Search className="h-5 w-5" />
+                    Find Homes
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mx-auto max-w-4xl space-y-8">
+              <div>
+                <label className="block text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wide">
+                  Budget (Yearly)
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {[500000, 1000000, 2000000, 3000000, 5000000].map((amount) => (
-                    <Button key={amount} variant="outline" size="sm" onClick={() => setRentAmount(amount)}>
-                      {formatNaira(amount)}
-                    </Button>
+                <div className="flex flex-wrap gap-3">
+                  {budgetRanges.map((range) => (
+                    <button
+                      key={range.label}
+                      onClick={() => setBudget((range.min + range.max) / 2)}
+                      className={cn(
+                        "px-4 py-2 rounded-full border transition-all font-semibold",
+                        budget >= range.min && budget <= range.max
+                          ? "border-blue-500 bg-blue-500 text-white"
+                          : "border-slate-300 bg-white text-slate-900 hover:border-blue-400"
+                      )}
+                    >
+                      {range.label}
+                    </button>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
-                <h3 className="mb-4 font-display text-xl font-bold text-primary">Your cost breakdown</h3>
-                <CostRow label="Annual rent" value={formatNaira(rentAmount)} />
-                <CostRow label={`Commission (${commissionRate * 100}%)`} value={formatNaira(commission)} />
-                {listedBy === "agent" ? <CostRow label="Agent share (10%)" value={formatNaira(agentShare)} muted /> : null}
-                <CostRow label={`Renthob share (${listedBy === "agent" ? 5 : 10}%)`} value={formatNaira(renthobShare)} muted />
-                <div className="my-4 border-t border-primary/20" />
-                <CostRow label="Total you pay" value={formatNaira(totalCost)} strong />
-                <div className="mt-5 rounded-xl bg-white p-4 text-center text-sm text-muted-foreground">
-                  <p className="font-bold text-primary">No hidden fees</p>
-                  <p>No inspection fee. No legal fee. No total package.</p>
+              <div>
+                <label className="block text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wide">
+                  Location
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {locations.map((location) => (
+                    <button
+                      key={location}
+                      className="px-4 py-2 rounded-full border border-slate-300 bg-white text-slate-900 hover:border-blue-400 font-semibold transition-all"
+                    >
+                      {location}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wide">
+                  Lifestyle
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {lifestyles.map((style) => (
+                    <button
+                      key={style.label}
+                      className="px-4 py-2 rounded-full border border-slate-300 bg-white text-slate-900 hover:border-blue-400 font-semibold transition-all flex items-center gap-2"
+                    >
+                      <span>{style.emoji}</span>
+                      {style.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-8 pt-4">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 h-14 text-lg rounded-2xl shadow-lg">
+                  <Sparkles className="h-5 w-5" />
+                  Get AI Recommendations
+                </Button>
+                <button className="text-slate-500 hover:text-slate-700 font-medium flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5" />
+                  Take the Quiz Instead
+                </button>
+              </div>
+            </div>
+
+            {rankedNeighborhoods.length > 0 && (
+              <div className="mt-12">
+                <h3 className="font-display text-2xl font-bold mb-6">AI Recommended Neighborhoods</h3>
+                <div className="grid gap-5 md:grid-cols-2">
+                  {rankedNeighborhoods.map(({ neighborhood, score }) => (
+                    <NeighborhoodCard
+                      key={neighborhood.id}
+                      neighborhood={neighborhood}
+                      score={score}
+                      isSaved={savedIds.includes(neighborhood.id)}
+                      onSave={() => toggleSaved(neighborhood.id)}
+                      onMap={() => {
+                        setSelectedId(neighborhood.id);
+                        setActiveView("map");
+                      }}
+                      onCalculator={() => {
+                        setRentAmount(neighborhood.budget);
+                        setActiveView("calculator");
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeView === "saved" && (
+          <section className="container">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="font-display text-3xl font-bold">Saved Neighborhoods</h2>
+                <p className="text-slate-500 mt-1">{savedNeighborhoods.length} neighborhoods saved</p>
+              </div>
+              <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm hover:bg-slate-50">
+                <Moon className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+              {savedNeighborhoods.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {savedNeighborhoods.map((neighborhood) => (
+                    <NeighborhoodCard
+                      key={neighborhood.id}
+                      neighborhood={neighborhood}
+                      score={95}
+                      isSaved={true}
+                      onSave={() => toggleSaved(neighborhood.id)}
+                      onMap={() => {
+                        setSelectedId(neighborhood.id);
+                        setActiveView("map");
+                      }}
+                      onCalculator={() => {
+                        setRentAmount(neighborhood.budget);
+                        setActiveView("calculator");
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <Heart className="mx-auto mb-6 h-20 w-20 text-slate-300" />
+                  <h3 className="text-2xl font-bold mb-3">No saved neighborhoods yet</h3>
+                  <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                    Tap the heart icon on any neighborhood to save it here for quick access and comparison.
+                  </p>
+                  <Button onClick={() => setActiveView("match")} className="bg-slate-900 text-white px-6 py-3 rounded-xl text-lg">
+                    Browse Neighborhoods
+                  </Button>
+                </>
+              )}
+            </div>
+          </section>
+        )}
+
+        {activeView === "map" && (
+          <section className="container">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="font-display text-2xl font-bold">Neighborhood Map</h2>
+                <p className="text-slate-500 text-sm">279 neighborhoods across Nigeria</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    placeholder="Search..."
+                    className="h-10 rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-blue-400"
+                  />
+                </div>
+                <select className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-blue-400">
+                  <option>All States</option>
+                  <option>Lagos</option>
+                  <option>FCT</option>
+                </select>
+                <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+                  <RefreshCw className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+              <div className="relative min-h-[520px] overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-sky-50 via-emerald-50 to-amber-50 shadow-sm">
+                <div className="absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.05)_1px,transparent_1px)] [background-size:44px_44px]" />
+                {neighborhoods.map((neighborhood) => (
+                  <button
+                    key={neighborhood.id}
+                    type="button"
+                    onClick={() => setSelectedId(neighborhood.id)}
+                    className={cn(
+                      "absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold shadow-md transition-all",
+                      selectedNeighborhood.id === neighborhood.id
+                        ? "border-blue-500 bg-blue-500 text-white"
+                        : "border-white bg-white text-slate-700 hover:border-blue-400"
+                    )}
+                    style={{ left: `${neighborhood.x}%`, top: `${neighborhood.y}%` }}
+                  >
+                    <MapPin className="h-4 w-4" />
+                    {neighborhood.name}
+                  </button>
+                ))}
+                <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-sm rounded-lg px-4 py-3">
+                  <div className="text-xs text-white font-semibold mb-2">Cost:</div>
+                  <div className="flex items-center gap-3 text-xs text-white">
+                    <span className="flex items-center gap-1">
+                      <span className="h-3 w-3 rounded-full bg-green-500" />
+                      Affordable
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="h-3 w-3 rounded-full bg-yellow-500" />
+                      Moderate
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="h-3 w-3 rounded-full bg-orange-500" />
+                      Expensive
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="h-3 w-3 rounded-full bg-red-500" />
+                      Premium
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-blue-500">Map selection</p>
+                <h2 className="font-display text-2xl font-bold">{selectedNeighborhood.name}</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  {selectedNeighborhood.city}, {selectedNeighborhood.state}
+                </p>
+                <p className="mt-4 text-sm leading-6 text-slate-600">{selectedNeighborhood.summary}</p>
+                <div className="mt-4 space-y-3 text-sm">
+                  <InfoRow icon={Shield} label="Safety" value={`${selectedNeighborhood.safety}/5`} />
+                  <InfoRow icon={Wallet} label="Rent" value={selectedNeighborhood.rentRange} />
+                  <InfoRow icon={Navigation} label="Commute" value={selectedNeighborhood.commute} />
+                </div>
+                <div className="mt-5 flex gap-2">
+                  <Button className="flex-1 gap-2 bg-blue-500 hover:bg-blue-600 text-white" onClick={() => toggleSaved(selectedNeighborhood.id)}>
+                    <Heart className="h-4 w-4" />
+                    {savedIds.includes(selectedNeighborhood.id) ? "Saved" : "Save"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      setRentAmount(selectedNeighborhood.budget);
+                      setActiveView("calculator");
+                    }}
+                  >
+                    Cost
+                  </Button>
                 </div>
               </div>
             </div>
           </section>
-        ) : null}
+        )}
 
-        {activeView === "chat" ? (
-          <section className="grid gap-5 lg:grid-cols-[320px_1fr]">
-            <aside className="rounded-2xl border border-border/60 bg-card p-5 shadow-card">
-              <h2 className="font-display text-2xl font-bold">Ask Renthob AI</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Ask about safety, rent expectations, lifestyle tradeoffs, commute routes, or which saved neighborhood is
-                best for your situation.
-              </p>
-              <div className="mt-5 space-y-3">
-                {["Compare Yaba and Gwarinpa", "Best quiet areas under NGN 1m", "What will I pay on a NGN 2m rent?"].map(
-                  (prompt) => (
-                    <div key={prompt} className="rounded-xl border border-border bg-background p-3 text-sm text-muted-foreground">
-                      {prompt}
-                    </div>
-                  )
-                )}
+        {activeView === "calculator" && (
+          <section className="container">
+
+            <div className="space-y-6 max-w-6xl mx-auto">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                <h3 className="font-display text-2xl font-bold mb-8">Who listed the property?</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <button
+                    onClick={() => setListedBy("agent")}
+                    className={cn(
+                      "rounded-2xl p-6 border-2 transition-all text-center",
+                      listedBy === "agent" ? "border-blue-500 bg-blue-500 text-white" : "border-slate-200 bg-slate-900 text-white hover:border-slate-400"
+                    )}
+                  >
+                    <Users className="h-7 w-7 mx-auto mb-3" />
+                    <h4 className="font-display text-xl font-bold mb-2">Agent Listed</h4>
+                    <p className="text-sm opacity-90">15% commission</p>
+                  </button>
+                  <button
+                    onClick={() => setListedBy("landlord")}
+                    className={cn(
+                      "rounded-2xl p-6 border-2 transition-all text-center",
+                      listedBy === "landlord" ? "border-blue-500 bg-blue-500 text-white" : "border-slate-200 bg-slate-900 text-white hover:border-slate-400"
+                    )}
+                  >
+                    <Home className="h-7 w-7 mx-auto mb-3" />
+                    <h4 className="font-display text-xl font-bold mb-2">Landlord Listed</h4>
+                    <p className="text-sm opacity-90">10% commission</p>
+                  </button>
+                </div>
               </div>
-            </aside>
-            <ChatWindow />
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                <h3 className="font-display text-2xl font-bold mb-8">Annual Rent Amount</h3>
+                <div className="text-center mb-6">
+                  <div className="text-5xl font-bold text-blue-500">
+                    ₦{rentAmount.toLocaleString()}
+                    <span className="text-2xl text-slate-400 font-normal">/year</span>
+                  </div>
+                </div>
+                <input
+                  type="range"
+                  min={200000}
+                  max={10000000}
+                  step={50000}
+                  value={rentAmount}
+                  onChange={(event) => setRentAmount(Number(event.target.value))}
+                  className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+                <div className="flex justify-center gap-3 mt-8">
+                  {[500000, 1000000, 2000000, 3000000, 5000000].map((amount) => (
+                    <button
+                      key={amount}
+                      onClick={() => setRentAmount(amount)}
+                      className={cn(
+                        "px-4 py-3 rounded-xl font-bold text-lg transition-all",
+                        rentAmount === amount
+                          ? "bg-blue-500 text-white"
+                          : "bg-slate-900 text-white hover:bg-slate-800"
+                      )}
+                    >
+                      ₦{(amount / 1000000).toFixed(amount >= 1000000 ? 0 : 1)}M
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-6 md:p-8 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-display text-2xl font-bold text-blue-600">Your Cost Breakdown</h3>
+                  <CheckCircle2 className="h-7 w-7 text-blue-600" />
+                </div>
+                <div className="space-y-4 text-lg">
+                  <CostRow label="Annual Rent" value={`₦${rentAmount.toLocaleString()}`} />
+                  <CostRow label={`Commission (${commissionRate * 100}%)`} value={`₦${Math.round(commission).toLocaleString()}`} />
+                  {listedBy === "agent" && (
+                    <>
+                      <div className="pl-6 border-l-2 border-blue-200 ml-2 space-y-4 text-lg text-slate-600">
+                        <CostRow label="→ Agent (10%)" value={`₦${Math.round(agentShare).toLocaleString()}`} />
+                        <CostRow label="→ Renthob (5%)" value={`₦${Math.round(renthobShare).toLocaleString()}`} />
+                      </div>
+                    </>
+                  )}
+                  <div className="border-t border-blue-200 pt-4 mt-4">
+                    <CostRow label="Total You Pay" value={`₦${Math.round(totalCost).toLocaleString()}`} strong blue />
+                  </div>
+                </div>
+                <div className="mt-8 bg-blue-100/50 rounded-2xl p-6 text-center">
+                  <p className="font-display text-xl font-bold text-blue-600 mb-2 flex items-center justify-center gap-2">
+                    <CheckSquare className="h-6 w-6" />
+                    No hidden fees
+                  </p>
+                  <p className="text-slate-600">No inspection fee • No legal fee • No caution deposit • No total package</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-2xl p-6 md:p-10 text-white">
+                <div className="flex items-center justify-between flex-wrap gap-6">
+                  <div className="flex items-center gap-6">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20">
+                      <TrendingDown className="h-10 w-10" />
+                    </div>
+                    <div>
+                      <p className="text-blue-100 text-lg">Renthob Promise</p>
+                      <h3 className="font-display text-3xl font-bold">Transparent Pricing</h3>
+                      <p className="text-blue-100 text-lg mt-1 max-w-md">
+                        Only 15% commission — split between agent (10%) and Renthob (5%)
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-blue-100 text-lg mb-3">What you'll never pay:</p>
+                    <div className="flex flex-wrap gap-3 justify-end">
+                      <span className="flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-lg">
+                        <Ban className="h-5 w-5" />
+                        Inspection fee
+                      </span>
+                      <span className="flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-lg">
+                        <Ban className="h-5 w-5" />
+                        Hidden charges
+                      </span>
+                      <span className="flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-lg">
+                        <Ban className="h-5 w-5" />
+                        Total package
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
-        ) : null}
+        )}
       </main>
+
+      <button
+        onClick={() => setShowChat(!showChat)}
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg z-50 transition-all"
+      >
+        <MessageSquare className="h-5 w-5" />
+        Ask AI
+      </button>
+
+      {showChat && (
+        <div className="fixed bottom-24 right-6 w-96 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="bg-blue-500 p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Bot className="h-6 w-6 text-white" />
+                <h3 className="font-bold text-white">Ask Renthob AI</h3>
+              </div>
+              <button onClick={() => setShowChat(false)} className="text-white hover:bg-white/20 rounded-full p-1">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="h-96">
+              <ChatWindow />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -517,13 +717,13 @@ const NeighborhoodCard = ({
   onMap: () => void;
   onCalculator: () => void;
 }) => (
-  <article className="rounded-2xl border border-border/60 bg-card p-5 shadow-card transition-all hover:shadow-soft">
+  <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md">
     <div className="mb-3 flex items-start justify-between gap-3">
       <div>
-        <p className="text-xs font-bold uppercase tracking-wider text-primary">{score}% match</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-blue-500">{score}% match</p>
         <h3 className="font-display text-xl font-bold">{neighborhood.name}</h3>
-        <p className="flex items-center gap-1 text-sm text-muted-foreground">
-          <MapPin className="h-3.5 w-3.5" />
+        <p className="flex items-center gap-1 text-sm text-slate-500">
+          <MapPin className="h-3.5 w-3.5 shrink-0" />
           {neighborhood.city}, {neighborhood.state}
         </p>
       </div>
@@ -532,14 +732,14 @@ const NeighborhoodCard = ({
         onClick={onSave}
         className={cn(
           "flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
-          isSaved ? "border-primary bg-primary text-white" : "border-border text-muted-foreground hover:text-primary"
+          isSaved ? "border-blue-500 bg-blue-500 text-white" : "border-slate-300 text-slate-500 hover:text-blue-500"
         )}
         aria-label={isSaved ? "Remove saved neighborhood" : "Save neighborhood"}
       >
         <Heart className="h-5 w-5" />
       </button>
     </div>
-    <p className="mb-4 text-sm leading-6 text-muted-foreground">{neighborhood.summary}</p>
+    <p className="mb-4 text-sm leading-6 text-slate-600">{neighborhood.summary}</p>
     <div className="mb-4 grid grid-cols-3 gap-2 text-xs">
       <Metric icon={Wallet} label="Rent" value={neighborhood.rentRange} />
       <Metric icon={Shield} label="Safety" value={`${neighborhood.safety}/5`} />
@@ -547,13 +747,13 @@ const NeighborhoodCard = ({
     </div>
     <div className="mb-4 flex flex-wrap gap-2">
       {neighborhood.amenities.map((amenity) => (
-        <span key={amenity} className="rounded-full bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
+        <span key={amenity} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700">
           {amenity}
         </span>
       ))}
     </div>
     <div className="flex gap-2">
-      <Button size="sm" className="flex-1 gap-2" onClick={onMap}>
+      <Button size="sm" className="flex-1 gap-2 bg-blue-500 hover:bg-blue-600 text-white" onClick={onMap}>
         <MapIcon className="h-4 w-4" />
         Map
       </Button>
@@ -566,26 +766,132 @@ const NeighborhoodCard = ({
 );
 
 const Metric = ({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) => (
-  <div className="rounded-xl bg-background p-3">
-    <Icon className="mb-2 h-4 w-4 text-primary" />
-    <p className="font-semibold text-foreground">{label}</p>
-    <p className="mt-1 line-clamp-2 text-muted-foreground">{value}</p>
+  <div className="rounded-xl bg-slate-50 p-3">
+    <Icon className="mb-2 h-4 w-4 text-blue-500" />
+    <p className="font-semibold text-slate-900">{label}</p>
+    <p className="mt-1 line-clamp-2 text-slate-500">{value}</p>
   </div>
 );
 
 const InfoRow = ({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) => (
-  <div className="flex gap-3 rounded-xl bg-background p-3">
-    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+  <div className="flex gap-3 rounded-xl bg-slate-50 p-3">
+    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
     <div>
-      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="text-sm font-semibold text-foreground">{value}</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</p>
+      <p className="text-sm font-semibold text-slate-900">{value}</p>
     </div>
   </div>
 );
 
-const CostRow = ({ label, value, muted, strong }: { label: string; value: string; muted?: boolean; strong?: boolean }) => (
-  <div className={cn("flex items-center justify-between gap-4 py-2 text-sm", muted && "pl-4 text-muted-foreground", strong && "text-lg font-bold")}>
-    <span>{label}</span>
-    <span className={cn("font-semibold", strong && "text-primary")}>{value}</span>
+const CostRow = ({ label, value, strong, blue }: { label: string; value: string; strong?: boolean; blue?: boolean }) => (
+  <div className="flex items-center justify-between gap-4 py-2">
+    <span className={cn("text-slate-600", strong && "text-2xl font-bold text-slate-900")}>{label}</span>
+    <span className={cn("font-semibold text-xl", strong && "text-3xl", blue && "text-blue-500")}>{value}</span>
   </div>
 );
+
+function ClipboardList(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+      <path d="M12 11h4" />
+      <path d="M12 16h4" />
+      <path d="M8 11h.01" />
+      <path d="M8 16h.01" />
+    </svg>
+  );
+}
+
+function RefreshCw(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+      <path d="M21 3v5h-5" />
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+      <path d="M3 21v-5h5" />
+    </svg>
+  );
+}
+
+function CheckSquare(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="9 11 12 14 22 4" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+    </svg>
+  );
+}
+
+function TrendingDown(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
+      <polyline points="16 17 22 17 22 11" />
+    </svg>
+  );
+}
+
+function Ban(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m4.9 4.9 14.2 14.2" />
+    </svg>
+  );
+}

@@ -15,12 +15,14 @@ import {
   Search,
   Share2,
   Shield,
+  Sparkles,
   Square,
   Users,
 } from "lucide-react";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { renthobProperties, type RenthobProperty } from "../data/renthobProperties";
+import { Button } from "../components/ui";
 
 const properties = renthobProperties;
 
@@ -208,6 +210,27 @@ export const Home = () => {
                     Search
                   </Link>
                 </div>
+              </div>
+
+              <div className="mt-5 relative z-10 animate-fade-in [animation-delay:250ms]">
+                <Link
+                  to="/ai-advisor"
+                  className="group flex items-center justify-between gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-left transition-all hover:bg-primary/10 hover:shadow-soft"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg font-bold text-foreground">Renthob AI</h3>
+                      <p className="text-sm text-muted-foreground">Find neighborhoods that match your budget, lifestyle, and commute</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="hidden text-sm font-medium text-primary sm:inline">Explore AI</span>
+                    <ArrowRight className="h-5 w-5 text-primary transition-transform group-hover:translate-x-1" />
+                  </div>
+                </Link>
               </div>
 
               <div className="mt-5 flex items-center justify-center gap-4 animate-fade-in [animation-delay:300ms] sm:gap-8">

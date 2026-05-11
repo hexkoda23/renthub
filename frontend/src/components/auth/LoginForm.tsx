@@ -43,16 +43,17 @@ export const LoginForm = () => {
     } catch (error: any) {
       console.error(error);
 
-      if (isRecoverableFirebaseIssue(error)) {
-        try {
-          const localUser = loginLocalAccount(data.email, data.password);
-          setUser({ ...localUser, id: localUser.uid });
-          toast.success("Logged in successfully!");
-          navigate("/dashboard");
-        } catch (localError: any) {
-          toast.error(localError.message || "Login failed");
-        }
+      try {
+        const localUser = loginLocalAccount(data.email, data.password);
+        setUser({ ...localUser, id: localUser.uid });
+        toast.success("Logged in successfully!");
+        navigate("/dashboard");
         return;
+      } catch (localError: any) {
+        if (isRecoverableFirebaseIssue(error)) {
+          toast.error(localError.message || "Login failed");
+          return;
+        }
       }
 
       toast.error(error.message || "Login failed");
