@@ -22,7 +22,6 @@ import {
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { renthobProperties, type RenthobProperty } from "../data/renthobProperties";
-import { Button } from "../components/ui";
 
 const properties = renthobProperties;
 

@@ -15,7 +15,6 @@ import {
   Search,
   Shield,
   Sparkles,
-  Sun,
   Users,
   Wallet,
   X,
@@ -25,7 +24,6 @@ import { Navbar } from "../components/layout/Navbar";
 import { ChatWindow } from "../components/ai-advisor/ChatWindow";
 import { Button } from "../components/ui";
 import { cn } from "../utils/cn";
-import { Link } from "react-router-dom";
 
 type Neighborhood = {
   id: string;
@@ -129,15 +127,10 @@ const neighborhoods: Neighborhood[] = [
 
 const savedKey = "renthob-ai-saved-neighborhoods";
 
-const formatNaira = (value: number) => `NGN ${Math.round(value).toLocaleString()}`;
-
 export const AIAdvisor = () => {
   const [activeView, setActiveView] = useState<"match" | "saved" | "map" | "calculator">("match");
   const [showChat, setShowChat] = useState(false);
   const [budget, setBudget] = useState(1200000);
-  const [state, setState] = useState("Any");
-  const [vibe, setVibe] = useState<Neighborhood["vibe"] | "any">("any");
-  const [safetyPriority, setSafetyPriority] = useState(4);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState(neighborhoods[0].id);
   const [rentAmount, setRentAmount] = useState(1000000);
@@ -158,18 +151,14 @@ export const AIAdvisor = () => {
 
   const rankedNeighborhoods = useMemo(() => {
     return neighborhoods
-      .filter((neighborhood) => state === "Any" || neighborhood.state === state)
       .map((neighborhood) => {
         const budgetDelta = Math.abs(neighborhood.budget - budget);
         const budgetScore = Math.max(0, 45 - Math.round((budgetDelta / Math.max(budget, 1)) * 45));
-        const vibeScore = vibe === "any" || neighborhood.vibe === vibe ? 25 : 8;
-        const safetyScore = neighborhood.safety >= safetyPriority ? 20 : neighborhood.safety * 3;
-        const score = Math.min(98, budgetScore + vibeScore + safetyScore + 10);
-
+        const score = Math.min(98, budgetScore + 35);
         return { neighborhood, score };
       })
       .sort((a, b) => b.score - a.score);
-  }, [budget, safetyPriority, state, vibe]);
+  }, [budget]);
 
   const savedNeighborhoods = neighborhoods.filter((neighborhood) => savedIds.includes(neighborhood.id));
   const selectedNeighborhood = neighborhoods.find((neighborhood) => neighborhood.id === selectedId) || neighborhoods[0];
